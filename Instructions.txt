@@ -1,0 +1,7 @@
+(1) Clone repository, or just download the Stepper directory
+(2) Open a terminal on your desktop
+(3) CD into the Stepper folder
+(4) Run the "make" command
+(5) Make sure that the Tm4c is plugged in
+(6) Run the "lm4flash stepper.axf" command
+(7) The firmware is now flashed to your device
