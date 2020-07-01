@@ -156,6 +156,31 @@ void relPosMode(uint8_t direction, uint8_t* cState, uint8_t numSteps) {
     }
 }
 
+uint16_t serialIn() {
+    return 150;
+}
+
+void run(uint8_t mode, uint8_t* cState) {
+    uint16_t stepNum;
+
+    if (mode != 0) { stepNum = serialIn(); }
+
+    switch (mode) {
+        case 0 : // Homing mode
+            homingMode(GPIO_PORTF_DATA_R, &mode, cState);
+            break;
+        case 1 : // Absolute positioning mode full range
+            absPosMode_360(stepNum, cState);
+            break;
+        case 2 : // Absolute positioning mode limited range
+            absPosMode_Slice(stepNum, cState);
+            break;
+        case 3 : // Relative positioning mode
+            relPosMode(stepNum, cState, 200);
+            break;
+    }
+}
+
 /*
 Important notes:
     - Everything here is built around the 28byj-48 motor, but switching to the nema-17 should just
@@ -173,23 +198,19 @@ int main() {
     PortF_Init(); // initialize switch input port
 
     uint8_t cState = 0x00; // track current motor state
-    uint8_t input = 0x01;  // placeholder input signal
-    uint8_t mode = 2;      
+    uint8_t home = 0x01;   // replace with home input pin
+    uint8_t dir = 0x01;    // replace with direction input pin
+    uint8_t mode = 0;      // replace with mode input pin
+    uint8_t start = 0x01;  // replace with start input pin  
+    uint8_t ready = 0x00;  // map to output pin
 
-    switch (mode) {
-        case 0 : // Homing mode
-            homingMode(GPIO_PORTF_DATA_R, &mode, &cState);
-            break;
-        case 1 : // Absolute positioning mode full range
-            input = 150;
-            absPosMode_360(150, &cState);
-            break;
-        case 2 : // Absolute positioning mode limited range
-            absPosMode_Slice(120, &cState);
-            break;
-        case 3 : // Relative positioning mode
-            relPosMode(input, &cState, 200);
-            break;
+    while(1) {
+        ready = 0x01;
+        if (start == 0x01) {
+            ready = 0x00;
+            run(mode, &cState);
+        }
+        break;
     }
     
     return 0;
