@@ -10,11 +10,11 @@ void PortA_Init(void) {             // initialize stepper data pins
   *GPIO_PORTA_DEN_R |= 0x3C;        // enable digital I/O on PA5-2
 }
 
-void PortF_Init(void) {               // initialize sw2
-    *SYSCTL_RCGCGPIO_R |= 0x20;       // activate clock on Port F
-    *GPIO_PORTF_DIR_R &= ~0x10;       // make PF4 an input pin
-    *GPIO_PORTF_DEN_R |= 0x10;        // enable digital i/o on PF4
-    *GPIO_PORTF_PUR_R |= 0x10;        // enable PUR on sw2
+void PortF_Init(void) {             // initialize sw2
+    *SYSCTL_RCGCGPIO_R |= 0x20;     // activate clock on Port F
+    *GPIO_PORTF_DIR_R &= ~0x10;     // make PF4 an input pin
+    *GPIO_PORTF_DEN_R |= 0x10;      // enable digital i/o on PF4
+    *GPIO_PORTF_PUR_R |= 0x10;      // enable PUR on sw2
 }
 
 // Define the states in the 28byJ FSM
@@ -193,6 +193,7 @@ Important notes:
       could work to give us 16 positions across the range of motion, or we could use an 8-bit parallel bus
       which is a lot of pins but ¯\_(ツ)_/¯
 */
+
 int main() {
     PortA_Init(); // initialize stepper data output port
     PortF_Init(); // initialize switch input port

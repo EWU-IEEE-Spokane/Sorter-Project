@@ -1,2 +1,5 @@
-Stepper/*.{o, bin, axf}
-Stepper/.vscode
+Stepper/*.o
+Stepper/*.bin
+Stepper/*.axf
+Stepper/*.d
+Stepper/.vscode/*
