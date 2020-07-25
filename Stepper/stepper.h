@@ -43,4 +43,14 @@ uint32_t *GPIO_PORTF_DEN_R = (uint32_t*) (0x40025000 + 0x51C); // Port F Digital
 uint32_t *GPIO_PORTF_DATA_R = (uint32_t*) (0x40025000 + 0x40); // Port F Data for Pin PF0 (sw2)
 uint32_t *GPIO_PORTF_PUR_R = (uint32_t*) (0x40025000 + 0x510); // Port F Pull-up Resistors
 
+void stepOnce(uint8_t direction, uint8_t *cState);
+void debounce(uint8_t* input, uint8_t* flag);
+void homingMode(uint32_t* data, volatile uint8_t* mode, uint8_t* cState);
+void absPosMode_360(uint8_t data, uint8_t* cState);
+void absPosMode_Slice(uint8_t data, uint8_t* cState);
+void relPosMode(uint8_t direction, uint8_t* cState, uint8_t numSteps);
+void run(uint8_t mode, uint8_t* cState);
+uint8_t limitDebounce(uint32_t* limitSw);
+uint16_t serialIn();
+
 #endif

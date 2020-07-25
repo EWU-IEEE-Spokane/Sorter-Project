@@ -51,7 +51,6 @@ void PortF_Init(void) {               // initialize sw2
     *GPIO_PORTF_PUR_R |= 0x10;        // enable PUR on sw2
 }
 
-
 // States in the 28byJ FSM
 State_t byjFSM[4] = {
     {0, 0x04, {1, 3} },
@@ -223,19 +222,6 @@ void run(uint8_t mode, uint8_t* cState) {
             break;
     }
 }
-
-/*
-Important notes:
-    - Everything here is built around the 28byj-48 motor, but switching to the nema-17 should just
-      be a matter of adding a new stepper FSM data type
-
-    - Currently the only real input is Sw1 on the launchpad, this is mapped to Pf4
-
-    - An 8 bit input is necessary to specify a step number (0-199) for absolute positioning with
-      the NEMA-17, this probably should be done serially, but for now, a 4-bit parallel bus
-      could work to give us 16 positions across the range of motion, or we could use an 8-bit parallel bus
-      which is a lot of pins but ¯\_(ツ)_/¯
-*/
 
 int main() {
     PortA_Init(); // initialize stepper data output port
