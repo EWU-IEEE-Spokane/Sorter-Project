@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "stepper.h"
 
-uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; should be "home" position
+uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
 
 void PortA_Init(void) {             // initialize stepper data pins
   *SYSCTL_RCGCGPIO_R |= 0x01;       // activate clock on Port A
@@ -17,12 +17,21 @@ void PortF_Init(void) {             // initialize sw2
     *GPIO_PORTF_PUR_R |= 0x10;      // enable PUR on sw2
 }
 
-// Define the states in the 28byJ FSM
-State_t stepFsm[4] = {
+
+// States in the 28byJ FSM
+State_t byjFSM[4] = {
     {0, 0x04, {1, 3} },
     {1, 0x08, {2, 0} },
     {2, 0x10, {3, 1} },
     {3, 0x20, {0, 2} }
+};
+
+// States in the NEMA-17 FSM
+State_t nemaFSM[4] = {
+    {0, 0x18, {1, 3} },
+    {1, 0x28, {2, 0} },
+    {2, 0x24, {3, 1} },
+    {3, 0x14, {0, 2} }
 };
 
 // Quick and dirty busy-loop delay
@@ -34,8 +43,8 @@ void delayT(int maxCount) {
 // Step the motor once
 // Direction map: 0x00 = CW; 0x01 = CCW; 
 void stepOnce(uint8_t direction, uint8_t *cState) {
-    *cState = stepFsm[*cState].next[direction]; // Move to next state defined by direction
-    *GPIO_PORTA_DATA_R = stepFsm[*cState].out;  // Output motor data defined in new state
+    *cState = byjFSM[*cState].next[direction]; // Move to next state defined by direction
+    *GPIO_PORTA_DATA_R = byjFSM[*cState].out;  // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
     if (direction == 0x01) { 
@@ -73,11 +82,11 @@ void debounce(uint8_t* input, uint8_t* flag) {
 // Debounce limit switch
 uint8_t limitDebounce(uint32_t* limitSw) {
     if( (((*limitSw&0x10)>>4)) == 0x00) {       // If switch activated
-        delayT(1000);                         // Wait for bouncing to stop
+        delayT(1000);                           // Wait for bouncing to stop
         if( (((*limitSw&0x10)>>4)) == 0x00) {   // If switch still activated
-            return 0x00;                      // Report switch activated
+            return 0x00;                        // Report switch activated
         }
-        return 0x01;                          // Otherwise: switch is unactivated
+        return 0x01;                            // Otherwise: switch is unactivated
     } else {
         return 0x01;
     }
@@ -85,12 +94,12 @@ uint8_t limitDebounce(uint32_t* limitSw) {
 
 // Homing Mode
 void homingMode(uint32_t* data, volatile uint8_t* mode, uint8_t* cState) { // data = 0000 00 & direction & limitSw
-    while(*mode == 0 && (limitDebounce(data)) == 0x01) {                    // while the mode is unchanged and the switch is unpressed
-        stepOnce((*data&0x02)>>1, cState);                                // continuously step in the specified direction
+    while(*mode == 0 && (limitDebounce(data)) == 0x01) {                   // while the mode is unchanged and the switch is unpressed
+        stepOnce((*data&0x02)>>1, cState);                                 // continuously step in the specified direction
         delayT(10000);
     }
 
-    cStep = 0;                                                            // reset current step #
+    cStep = 0;                                                             // reset current step #
 }
 
 // Absolute Positioning Mode 1
