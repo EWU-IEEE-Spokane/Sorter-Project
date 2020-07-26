@@ -5,19 +5,6 @@
 
 uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
 
-/*
-======= Output ==========
-Drive:     PA5-2
-Ready:     PA6
-
-======= Input ===========
-Home sw:   PB0
-Direction: PB1
-Mode:      PB2&3
-Start:     PB4
-Number:    PD3-0 & PC7-4
-*/
-
 // States in the 28byJ FSM
 State_t byjFSM[4] = {
     {0, 0x04, {1, 3} },
@@ -189,28 +176,3 @@ void run(uint8_t mode, uint8_t* cState) {
             break;
     }
 }
-
-/*
-int main() {
-    PortA_Init(); // initialize stepper data output port
-    PortF_Init(); // initialize switch input port
-
-    uint8_t cState = 0x00; // track current motor state
-    uint8_t home = 0x01;   // replace with home input pin
-    uint8_t dir = 0x01;    // replace with direction input pin
-    uint8_t mode = 0;      // replace with mode input pin
-    uint8_t start = 0x01;  // replace with start input pin  
-    uint8_t ready = 0x00;  // map to output pin
-
-    while(1) {
-        ready = 0x01;
-        if (start == 0x01) {
-            ready = 0x00;
-            run(mode, &cState);
-        }
-        break;
-    }
-    
-    return 0;
-}
-*/
