@@ -13,12 +13,24 @@ State_t byjFSM[4] = {
     {3, 0x20, {0, 2} }
 };
 
-// States in the NEMA-17 FSM
+// States in the Nema-17 FSM
 State_t nemaFSM[4] = {
     {0, 0x18, {1, 3} },
     {1, 0x28, {2, 0} },
     {2, 0x24, {3, 1} },
     {3, 0x14, {0, 2} }
+};
+
+// Half-stepping Nema-17 FSM
+State_t nema2FSM[8] = {
+    {0, 0x18, {1, 7} },
+    {4, 0x08, {2, 0} },
+    {1, 0x28, {3, 1} },
+    {5, 0x20, {4, 2} },
+    {2, 0x24, {5, 3} },
+    {6, 0x04, {6, 4} },
+    {3, 0x14, {7, 5} },
+    {7, 0x10, {0, 6} }
 };
 
 // Quick and dirty busy-loop delay
@@ -30,8 +42,8 @@ void delayT(int maxCount) {
 // Step the motor once
 // Direction map: 0x00 = CW; 0x01 = CCW; 
 void stepOnce(uint8_t direction, uint8_t *cState) {
-    *cState = byjFSM[*cState].next[direction]; // Move to next state defined by direction
-    *GPIO_PORTA_DATA_R = byjFSM[*cState].out;  // Output motor data defined in new state
+    *cState = nema2FSM[*cState].next[direction]; // Move to next state defined by direction
+    *GPIO_PORTA_DATA_R = nema2FSM[*cState].out;  // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
     if (direction == 0x01) { 
@@ -67,25 +79,24 @@ void debounce(uint8_t* input, uint8_t* flag) {
 
 
 // Debounce limit switch
-uint8_t limitDebounce(uint32_t* limitSw) {
-    if( (((*limitSw&0x10)>>4)) == 0x00) {       // If switch activated
-        delayT(1000);                           // Wait for bouncing to stop
-        if( (((*limitSw&0x10)>>4)) == 0x00) {   // If switch still activated
-            return 0x00;                        // Report switch activated
+uint8_t limitDebounce() {
+    if (HOME == 0x01) {       // If switch activated
+        delayT(1000);         // Wait for bouncing to stop
+        if (HOME == 0x01) {   // If switch still activated
+            return 0x01;      // Report switch activated
         }
-        return 0x01;                            // Otherwise: switch is unactivated
+        return 0x00;          // Otherwise: switch is unactivated
     } else {
-        return 0x01;
+        return 0x00;
     }
 }
 
 // Homing Mode
-void homingMode(uint32_t* data, volatile uint8_t* mode, uint8_t* cState) { // data = 0000 00 & direction & limitSw
-    while(*mode == 0 && (limitDebounce(data)) == 0x01) {                   // while the mode is unchanged and the switch is unpressed
-        stepOnce((*data&0x02)>>1, cState);                                 // continuously step in the specified direction
+void homingMode(uint8_t* cState) { // data = 0000 00 & direction & limitSw
+    while(MODE == 0 && (limitDebounce() == 0x00)) {                   // while the mode is unchanged and the switch is unpressed
+        stepOnce(DIRECTION, cState);                                 // continuously step in the specified direction
         delayT(10000);
     }
-
     cStep = 0;                                                             // reset current step #
 }
 
@@ -96,16 +107,16 @@ void absPosMode_360(uint8_t data, uint8_t* cState) {
     
     uint8_t direction = 0x00;
 
-    // Determine shortest path from cStep to "data" step
+    // Determine shortest path from cStep to "number" step
     // This algorithm can definitely be improved
-    if (data > cStep) {
-        if ((data - cStep) < (MAX_STEP / 2)) {
+    if (NUMBER > cStep) {
+        if ((NUMBER - cStep) < (MAX_STEP / 2)) {
             direction = DIRECTION_CW;
         } else {
             direction = DIRECTION_CCW;
         }
     } else {
-        if ((cStep - data) < (MAX_STEP / 2)) {
+        if ((cStep - NUMBER) < (MAX_STEP / 2)) {
             direction = DIRECTION_CCW;
         } else {
             direction = DIRECTION_CW;
@@ -152,27 +163,19 @@ void relPosMode(uint8_t direction, uint8_t* cState, uint8_t numSteps) {
     }
 }
 
-uint16_t serialIn() {
-    return 150;
-}
-
 void run(uint8_t mode, uint8_t* cState) {
-    uint16_t stepNum;
-
-    if (mode != 0) { stepNum = serialIn(); }
-
-    switch (mode) {
+    switch (MODE) {
         case 0 : // Homing mode
-            homingMode(GPIO_PORTF_DATA_R, &mode, cState);
+            homingMode(cState);
             break;
         case 1 : // Absolute positioning mode full range
-            absPosMode_360(stepNum, cState);
+            absPosMode_360(NUMBER, cState);
             break;
         case 2 : // Absolute positioning mode limited range
-            absPosMode_Slice(stepNum, cState);
+            absPosMode_Slice(NUMBER, cState);
             break;
         case 3 : // Relative positioning mode
-            relPosMode(stepNum, cState, 200);
+            relPosMode(DIRECTION, cState, NUMBER);
             break;
     }
 }
