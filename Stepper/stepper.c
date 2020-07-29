@@ -103,7 +103,7 @@ void homingMode(uint8_t* cState) { // data = 0000 00 & direction & limitSw
 // Absolute Positioning Mode 1
 // Turns motor to specific step number CW from "home" position using shortest path
 // This works for applications with full 360 range of motion
-void absPosMode_360(uint8_t data, uint8_t* cState) {
+void absPosMode_360(uint8_t* cState) {
     
     uint8_t direction = 0x00;
 
@@ -124,7 +124,7 @@ void absPosMode_360(uint8_t data, uint8_t* cState) {
     }
 
     // Continuously stepOnce in determined direction until cStep=="data"
-    while(cStep != data) {
+    while(cStep != NUMBER) {
         stepOnce(direction, cState);
         delayT(10000);
     }
@@ -134,20 +134,20 @@ void absPosMode_360(uint8_t data, uint8_t* cState) {
 // Absolute Positioning Mode 2
 // Turns motor to specific step number CW from "home" position across "pie slice" of rotation
 // This works for motors with limited range of motion due to an obstruction
-void absPosMode_Slice(uint8_t data, uint8_t* cState) {
+void absPosMode_Slice(uint8_t* cState) {
     
     uint8_t direction = 0x00;
 
     // Determine shortest path from cStep to "data" step
     // This algorithm can definitely be improved
-    if (data > cStep) {
+    if (NUMBER > cStep) {
         direction = DIRECTION_CW;
     } else {
         direction = DIRECTION_CCW;
     }
 
     // Continuously stepOnce in determined direction until cStep=="data"
-    while(cStep != data) {
+    while(cStep != NUMBER) {
         stepOnce(direction, cState);
         delayT(10000);
     }
@@ -169,10 +169,10 @@ void run(uint8_t mode, uint8_t* cState) {
             homingMode(cState);
             break;
         case 1 : // Absolute positioning mode full range
-            absPosMode_360(NUMBER, cState);
+            absPosMode_360(cState);
             break;
         case 2 : // Absolute positioning mode limited range
-            absPosMode_Slice(NUMBER, cState);
+            absPosMode_Slice(cState);
             break;
         case 3 : // Relative positioning mode
             relPosMode(DIRECTION, cState, NUMBER);
