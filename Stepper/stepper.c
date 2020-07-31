@@ -4,6 +4,7 @@
 #include "init.h"
 
 uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
+uint8_t cState = 0;
 
 // States in the 28byJ FSM
 State_t byjFSM[4] = {
@@ -41,9 +42,9 @@ void delayT(int maxCount) {
 
 // Step the motor once
 // Direction map: 0x00 = CW; 0x01 = CCW; 
-void stepOnce(uint8_t direction, uint8_t *cState) {
-    *cState = nema2FSM[*cState].next[direction]; // Move to next state defined by direction
-    *GPIO_PORTA_DATA_R = nema2FSM[*cState].out;  // Output motor data defined in new state
+void stepOnce(uint8_t direction) {
+    cState = nema2FSM[cState].next[direction]; // Move to next state defined by direction
+    *GPIO_PORTA_DATA_R = nema2FSM[cState].out;  // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
     if (direction == 0x01) { 
@@ -92,9 +93,9 @@ uint8_t limitDebounce() {
 }
 
 // Homing Mode
-void homingMode(uint8_t* cState) { // data = 0000 00 & direction & limitSw
+void homingMode() { // data = 0000 00 & direction & limitSw
     while(MODE == 0 && (limitDebounce() == 0x00)) {                   // while the mode is unchanged and the switch is unpressed
-        stepOnce(DIRECTION, cState);                                 // continuously step in the specified direction
+        stepOnce(DIRECTION);                                 // continuously step in the specified direction
         delayT(10000);
     }
     cStep = 0;                                                             // reset current step #
@@ -103,7 +104,7 @@ void homingMode(uint8_t* cState) { // data = 0000 00 & direction & limitSw
 // Absolute Positioning Mode 1
 // Turns motor to specific step number CW from "home" position using shortest path
 // This works for applications with full 360 range of motion
-void absPosMode_360(uint8_t* cState) {
+void absPosMode_360() {
     
     uint8_t direction = 0x00;
 
@@ -125,7 +126,7 @@ void absPosMode_360(uint8_t* cState) {
 
     // Continuously stepOnce in determined direction until cStep=="data"
     while(cStep != NUMBER) {
-        stepOnce(direction, cState);
+        stepOnce(direction);
         delayT(10000);
     }
 }
@@ -134,7 +135,7 @@ void absPosMode_360(uint8_t* cState) {
 // Absolute Positioning Mode 2
 // Turns motor to specific step number CW from "home" position across "pie slice" of rotation
 // This works for motors with limited range of motion due to an obstruction
-void absPosMode_Slice(uint8_t* cState) {
+void absPosMode_Slice() {
     
     uint8_t direction = 0x00;
 
@@ -148,7 +149,7 @@ void absPosMode_Slice(uint8_t* cState) {
 
     // Continuously stepOnce in determined direction until cStep=="data"
     while(cStep != NUMBER) {
-        stepOnce(direction, cState);
+        stepOnce(direction);
         delayT(10000);
     }
 }
@@ -156,26 +157,26 @@ void absPosMode_Slice(uint8_t* cState) {
 // Relative Positioning Mode
 // Turns motor a specified number of steps in specified direction
 // No stop condition
-void relPosMode(uint8_t direction, uint8_t* cState, uint8_t numSteps) {
+void relPosMode(uint8_t direction, uint8_t numSteps) {
     for (int i = 0; i < numSteps; i++) {            
-        stepOnce(direction, cState);
+        stepOnce(direction);
         delayT(10000);
     }
 }
 
-void run(uint8_t mode, uint8_t* cState) {
+void run(uint8_t mode) {
     switch (MODE) {
         case 0 : // Homing mode
-            homingMode(cState);
+            homingMode();
             break;
         case 1 : // Absolute positioning mode full range
-            absPosMode_360(cState);
+            absPosMode_360();
             break;
         case 2 : // Absolute positioning mode limited range
-            absPosMode_Slice(cState);
+            absPosMode_Slice();
             break;
         case 3 : // Relative positioning mode
-            relPosMode(DIRECTION, cState, NUMBER);
+            relPosMode(DIRECTION, NUMBER);
             break;
     }
 }

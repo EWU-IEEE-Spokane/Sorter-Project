@@ -13,7 +13,6 @@
 #define START ((*GPIO_PORTB_DATA_R & 0x10) >> 4)
 #define NUMBER (((*GPIO_PORTD_DATA_R & 0x0F) << 4) | (*GPIO_PORTC_DATA_R & 0xF0))
 
-
 // Holds the data in a motor state
 struct State {
     uint8_t cState;
@@ -25,13 +24,13 @@ struct State {
 typedef const struct State State_t;
 
 void delayT(int maxCount);
-void stepOnce(uint8_t direction, uint8_t *cState);
+void stepOnce(uint8_t direction);
 void debounce(uint8_t* input, uint8_t* flag);
-void homingMode(uint8_t* cState);
-void absPosMode_360(uint8_t* cState);
-void absPosMode_Slice(uint8_t* cState);
-void relPosMode(uint8_t direction, uint8_t* cState, uint8_t numSteps);
-void run(uint8_t mode, uint8_t* cState);
+void homingMode();
+void absPosMode_360();
+void absPosMode_Slice();
+void relPosMode(uint8_t direction, uint8_t numSteps);
+void run(uint8_t mode);
 uint8_t limitDebounce();
 uint16_t serialIn();
 
