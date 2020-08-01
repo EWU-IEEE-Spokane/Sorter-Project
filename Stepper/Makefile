@@ -17,6 +17,7 @@ stepper.axf: startup.o
 stepper.axf: umc_init.o
 stepper.axf: controller.o
 stepper.axf: stepper.o
+stepper.axf: I2C.c
 
 %.axf:
 	@echo arm-none-eabi-ld \
