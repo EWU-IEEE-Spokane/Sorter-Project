@@ -8,18 +8,16 @@
  * Description:
  * Initialization and config for I2C module 1 on port a pins 6 and 7 (6 is SCL, 7 is SDA)
  * Based on TM4C datasheet and Sensor (TCS34725) Datasheet.
- * Paper notes have been written up for specific initialization procedure.
+ * Paper notes have been written up for specific initialization procedure, as well as for the color sorting algorithm used.
+ * These documents will be converted into a legible format and published soon.
  * This is a work in progress.
- * 
- * First try failed due to incorrect I2C register base address 40021000 instead of 0x40021000
- * Second try failed due to incorrect stop bit signal in write_sensor() - 0x3 instead of 0x5 for stop, bus stayed busy
- * A number of subsequent tries failed due to an incorrect method of waiting on the bus in wait_on_bus();
- * This bus delay is still broken, but for now all transmissions are single writes or reads, and the bus delay is 
+ *  
+ * The wait_on_bus() bus delay is still broken, but for now all transmissions are single writes or reads, and the bus delay is 
  * simply a busy wait loop that kills time while the data is transmitting.
  * 
- * Digital saturation problems were resolved by keeping gain at 1x
+ * Digital saturation problems were resolved by keeping gain at 1x.
  * Analog saturation (sensor overwhelmed) problems were resolved by reducing integration time from 700ms to 154ms (config_sensor)
- * as well as reducing intensity of sensor LED light by adding PWM to PF1 and plugging the sensor LED pin in here
+ * as well as reducing intensity of sensor LED light by adding PWM to PF1 and plugging the sensor LED pin in there.
  * 
  * How to use this code:
  * You'll need the Adafruit TCS34725 color sensor breakout board to use this code.
@@ -67,6 +65,8 @@
 //
 //*****************************************************************************
 
+void setup();
+
 void blink(uint32_t);	//blink function for debugging with on-board LEDs
 void delay(uint32_t);	//delay function - keeps processor busy
 void setup_LEDs();
@@ -82,15 +82,15 @@ void config_sensor();
 
 uint8_t single_read();
 void single_write(uint8_t);
-void read_colors();
+int read_colors();
 float process_values(uint16_t, uint16_t, uint16_t);
 uint16_t applyGammaTable(float);
 
-void decideInf(char*, char);
-void decideMid(char*, char, char);
-void decideOne(char*, char);
+int decideInf(char*, char);
+int decideMid(char*, char, char);
+int decideOne(char*, char);
 
-void determine_color(uint16_t, uint16_t, uint16_t );
+int determine_color(uint16_t, uint16_t, uint16_t );
 
 void colorSort(uint8_t *);
 
@@ -125,9 +125,40 @@ uint32_t writeOffset = (0x1F<<2);   //write offset for pins 4 through 0. 4:SW1, 
 
 int main() {
 	//Call core functions in required sequence
+	int foo = 0;	//arbitrary integer value, in the system this integer will be the value sent to the controller
+	/*the controller will call read_colors to get the sort result:
+	* 0 = reject (colors other than skittle colors or bad data)
+	* 1 = red
+	* 2 = orange
+	* 3 = yellow
+	* 4 = green
+	* 5 = violet/purple
+	*/
+	//uint8_t sensorVersion = 0;
+	setup();
 	
-	uint8_t sensorVersion = 0;
+	while(1){
+		//runtime loop
+		//blink(0xE);	//white
+		
+		//sensorVersion = read_sensor(0x12);		//read sensor version register at sensor address 0x12
+		//say_byte(sensorVersion);
+		//new_line();
+		//if(sensorVersion == 0x44) blink(0x8);	//blink green to show that a valid sensor version was obtained from the device
+		
+		//blink(0xE);	//white
 
+		// wait for ADC was right here
+		//blink(0x4);	//blue
+		delay(10000000);
+		foo = read_colors();
+		
+		
+	}
+	
+}
+
+void setup(){
 	setup_clock();
 	setup_LEDs();
 	configure_pwm();
@@ -137,24 +168,6 @@ int main() {
 	config_sensor();
 	delay(10000);
 	setup_uart();
-	while(1){
-		//runtime loop
-		blink(0xE);	//white
-		
-		sensorVersion = read_sensor(0x12);		//read sensor version register at sensor address 0x12
-		say_byte(sensorVersion);
-		//new_line();
-		if(sensorVersion == 0x44) blink(0x8);	//blink green to show that a valid sensor version was obtained from the device
-		
-		blink(0xE);	//white
-
-		wait_on_adc();
-		blink(0x4);	//blue
-		read_colors();
-		
-		
-	}
-	
 }
 
 
@@ -285,8 +298,8 @@ void config_sensor() {
 	write_sensor(0x00, 0x01); //turn on sensor clock
 	delay(1000000);	//allow setup time for sensor clock - at least 2.4ms (this delay is probably overkill)
 	//blink(0x08); //blink green to show oscillators up
-	write_sensor(0x0F, 0x1); //set gain to 1xs
-	write_sensor(0x01, 0xC0);	//set integration time to 154ms
+	write_sensor(0x0F, 0x03); //set gain to 4x
+	write_sensor(0x01, 0x01);	//set integration time to 700ms (register 0x01)
 	write_sensor(0x00, 0x3); //turn on sensor ADC's with 0x2 (plus 0x1 to keep oscillators enabled)
 	//blink(0x08); //blink green to show ADC's up
 
@@ -378,7 +391,7 @@ void wait_on_adc() {
 		}
 }
 
-void read_colors() {
+int read_colors() {
 	//read each color register and return the collection of data
 	uint16_t redData = 0x0;
 	uint16_t greenData = 0x0;
@@ -391,7 +404,7 @@ void read_colors() {
 	//float redValue = 0x0;
 	//float greenValue = 0x0;
 	//float blueValue = 0x0;
-	
+	wait_on_adc();
 
 	//read color value registers and combine bytes:
 	whiteValue = (read_sensor(0x15)<<8) + read_sensor(0x14);
@@ -429,25 +442,26 @@ void read_colors() {
 	uartwrite('S');
 	uartwrite('-');
 	say_two_bytes(sum);
-	determine_color(redData, greenData, blueData);
+	return determine_color(redData, greenData, blueData);
 }
 
 //COLOR PROCESSING CODE -----------------------------------------------------------
 
-void determine_color(uint16_t r, uint16_t g, uint16_t b) {
+int determine_color(uint16_t r, uint16_t g, uint16_t b) {
 	uint32_t sum = 0;
 	uint32_t redPart = 0;
 	uint32_t greenPart = 0;
 	uint32_t bluePart = 0;
+	int resultInt = 0;	//reject by default
 	
 	sum = r+g+b;
 
 	//the following assignments give the protion of the total light recieved seen by each of the 3 channels (as a percentage)
 	//the values are scaled to compensate for asymmetric color sensitivities as seen in the color sensor datasheet, page 6 figure 2
 	//from figure 2, these values were obtained by calculating the inverse of the peak magnitude of each channel's color response
-	redPart = (r*120)/sum;		//120 is color scaling modifier (originally 119)
-	greenPart = (g*135)/sum;	//135 is color scaling modifier (originally 155)
-	bluePart = (b*190)/sum;		//190 is color scaling modifier (originally 182)
+	redPart = (r*100)/sum;		//120 is color scaling modifier (originally 119)
+	greenPart = (g*150)/sum;	//135 is color scaling modifier (originally 155)
+	bluePart = (b*165)/sum;		//190 is color scaling modifier (originally 182)
 	/**/
 	/*
 	uartwrite('h');
@@ -474,17 +488,18 @@ void determine_color(uint16_t r, uint16_t g, uint16_t b) {
 	if (denominator == 0) denominator = 1;	//avoid divide by 0
 	ratio = numerator/denominator;
 
-	if(ratio>(float)2.2){
-		decideInf(decision, colorChars[2]);	//decide based on largest color value
-	}else if(ratio>(float)1.3){
-		decideMid(decision, colorChars[2],colorChars[0]);	//decide based on largest and smallest color value
-	}else if(ratio>(float)0){
-		decideOne(decision, colorChars[0]);	//decide based on smallest color value
+	if(ratio>(float)6.0){		//2.2 threshold
+		resultInt = decideInf(decision, colorChars[2]);	//decide based on largest color value
+	}else if(ratio>(float)1.3){		//threshold 1.3
+		resultInt = decideMid(decision, colorChars[2],colorChars[0]);	//decide based on largest and smallest color value
+	}else if(ratio>=(float)0){
+		resultInt = decideOne(decision, colorChars[0]);	//decide based on smallest color value
 	}else{
 		strcpy(decision, "ratioCalcError");
+		resultInt = 0;
 	}
 	say_string(decision, 16);
-
+	return resultInt;
 }
 
 
@@ -497,62 +512,77 @@ void mapColorChars(char* chars, uint8_t* colorVals, uint8_t r, uint8_t g, uint8_
 	}
 }
 
-void decideInf(char* decision, char max){
+int decideInf(char* decision, char max){
 	switch (max)
 	{
 	case 'r':
 		strcpy(decision, "red");
+		return 1;
 		break;
 	case 'g':
 		strcpy(decision, "green");
+		return 4;
 		break;
 	case 'b':
 		strcpy(decision, "blue");
+		return 0;
 		break;
 	default:
 		strcpy(decision, "charMappingError");
+		return 0;
 		break;
 	}
 }
 
-void decideMid(char* decision, char max, char min){
+int decideMid(char* decision, char max, char min){
 	if(max=='r'){
 		if(min=='b'){
 			strcpy(decision, "orange");
+			return 2;
 		}else{
 			strcpy(decision, "magenta");
+			return 0;
 		}
 	}else if(max=='g'){
 		if(min=='b'){
 			strcpy(decision, "yellow-green");
+			return 0;
 		}else{
 			strcpy(decision, "blue-green");
+			return 0;
 		}
 	}else if(max=='b'){
 		if(min=='g'){
 			strcpy(decision, "indigo");
+			return 0;
 		}else{
 			strcpy(decision, "light blue");
+			return 0;
 		}
 	}else{
 		strcpy(decision, "charMappingError");
+		return 0;
 	}
 }
 
-void decideOne(char* decision, char min){
+int decideOne(char* decision, char min){
 	switch (min)
 	{
 	case 'r':
-		strcpy(decision, "yellow");
+		strcpy(decision, "teal");
+		return 5;	//say violet for now
 		break;
 	case 'g':
 		strcpy(decision, "violet");
+		return 5;
 		break;
 	case 'b':
-		strcpy(decision, "teal");
+		strcpy(decision, "yellow");
+		return 3;
 		break;
 	default:
 		strcpy(decision, "charMappingError");
+		return 0;
 		break;
 	}
 }
@@ -666,7 +696,7 @@ void configure_pwm(){
 
 	//Change these values to change PWM Duty Cycle. Load determines max count value, cmpB is counter value at which the ouput goes high
     *pwm2load = 0x999;	//arbitrary value for testing
-    *pwm2cmpB = 0x998;	//arbitrary value for testing, comp B must be less than load
+    *pwm2cmpB = 0x996;	//arbitrary value for testing, comp B must be less than load
 	
 	/*doesnt work if this block is included, despite datasheet recommending it. Need additional controls?
 	*SRPWM |= (1<<1);	//clear pwm1 counter so it can be started over by command
