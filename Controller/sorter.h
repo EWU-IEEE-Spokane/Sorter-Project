@@ -10,9 +10,6 @@
 #define PURPLE 0x32
 #define YELLOW 0x00
 
-void setUMCNumber(uint8_t number);
-void setUMCMode(uint8_t mode);
-void setUMCDirection(uint8_t direction);
 void runUMC(uint8_t number, uint8_t mode, uint8_t direction);
 
 void loadSkittle();
