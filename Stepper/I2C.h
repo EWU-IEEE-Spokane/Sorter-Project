@@ -1,3 +1,5 @@
+#ifndef I2C_H
+#define I2C_H
 //*****************************************************************************
 //
 // Include standard boolean (true, false, bool type) and standard integer 
@@ -25,6 +27,8 @@
 //
 //*****************************************************************************
 
+void setup();
+
 void blink(uint32_t);	//blink function for debugging with on-board LEDs
 void delay(uint32_t);	//delay function - keeps processor busy
 void setup_LEDs();
@@ -40,15 +44,15 @@ void config_sensor();
 
 uint8_t single_read();
 void single_write(uint8_t);
-void read_colors();
+int read_colors();
 float process_values(uint16_t, uint16_t, uint16_t);
 uint16_t applyGammaTable(float);
 
-void decideInf(char*, char);
-void decideMid(char*, char, char);
-void decideOne(char*, char);
+int decideInf(char*, char);
+int decideMid(char*, char, char);
+int decideOne(char*, char);
 
-void determine_color(uint16_t, uint16_t, uint16_t );
+int determine_color(uint16_t, uint16_t, uint16_t );
 
 void colorSort(uint8_t *);
 
@@ -74,3 +78,4 @@ void new_line();
 //*****************************************************************************
 
 uint32_t writeOffset = (0x1F<<2);   //write offset for pins 4 through 0. 4:SW1, 0:SW2, 3:Green, 2:Blue, 1:Red (in Port F)
+#endif

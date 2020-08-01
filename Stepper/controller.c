@@ -7,7 +7,7 @@
 #define ORANGE 0x64
 #define PURPLE 0x32
 #define YELLOW 0x00
-#define REJECT 0x00
+#define REJECT 0xFF
 
 uint8_t colors[5] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 
@@ -19,7 +19,7 @@ int main() {
     gpioInit();
     setup();
     
-    for (int i = 0; i < 5; i++) {
+    while (true) {
         chuteToColor(read_colors());
         delayT(1000000);
     }
