@@ -15,7 +15,7 @@ all: stepper.bin
 stepper.axf: tiva.ld
 stepper.axf: startup.o
 stepper.axf: umc_init.o
-stepper.axf: umc.o
+stepper.axf: controller.o
 stepper.axf: stepper.o
 
 %.axf:
