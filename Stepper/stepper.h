@@ -7,12 +7,6 @@
 #define DIRECTION_CW 0x01
 #define DIRECTION_CCW 0x00
 
-#define HOME (*GPIO_PORTB_DATA_R & 0x01)
-#define DIRECTION ((*GPIO_PORTB_DATA_R & 0x02) >> 1)
-#define MODE ((*GPIO_PORTB_DATA_R & 0x0C) >> 2)
-#define START ((*GPIO_PORTB_DATA_R & 0x10) >> 4)
-#define NUMBER (((*GPIO_PORTD_DATA_R & 0x0F) << 4) | ((*GPIO_PORTC_DATA_R & 0xF0)>>4))
-
 // Holds the data in a motor state
 struct State {
     uint8_t cState;

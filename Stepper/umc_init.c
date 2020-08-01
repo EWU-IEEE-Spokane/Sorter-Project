@@ -1,5 +1,5 @@
 #include "stepper.h"
-#include "init.h"
+#include "umc_init.h"
 
 // I/O port addresses
 uint32_t* SYSCTL_RCGCGPIO_R = (uint32_t*) (0x400FE000 + 0x608);// Run-mode clock gating control

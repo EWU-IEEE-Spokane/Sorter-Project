@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "stepper.h"
-#include "init.h"
+#include "umc_init.h"
 
 uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
 uint8_t cState = 0;

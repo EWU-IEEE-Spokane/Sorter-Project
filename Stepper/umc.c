@@ -1,5 +1,5 @@
 #include "stepper.h"
-#include "init.h"
+#include "umc_init.h"
 
 int main() {
     gpioInit();
