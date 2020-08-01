@@ -134,20 +134,20 @@ void absPosMode_360() {
 // Absolute Positioning Mode 2
 // Turns motor to specific step number CW from "home" position across "pie slice" of rotation
 // This works for motors with limited range of motion due to an obstruction
-void absPosMode_Slice() {
+void absPosMode_Slice(uint8_t stepNum) {
     
     uint8_t direction = 0x00;
 
     // Determine shortest path from cStep to "data" step
     // This algorithm can definitely be improved
-    if (NUMBER > cStep) {
+    if (stepNum > cStep) {
         direction = DIRECTION_CW;
     } else {
         direction = DIRECTION_CCW;
     }
 
     // Continuously stepOnce in determined direction until cStep=="data"
-    while(cStep != NUMBER) {
+    while(cStep != stepNum) {
         stepOnce(direction);
         delayT(10000);
     }
@@ -173,7 +173,7 @@ void run(uint8_t mode) {
             absPosMode_360();
             break;
         case 2 : // Absolute positioning mode limited range
-            absPosMode_Slice();
+            absPosMode_Slice(number);
             break;
         case 3 : // Relative positioning mode
             relPosMode(DIRECTION, number);
