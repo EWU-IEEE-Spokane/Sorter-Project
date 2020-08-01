@@ -47,7 +47,7 @@ void stepOnce(uint8_t direction) {
     *GPIO_PORTA_DATA_R = nema2FSM[cState].out;  // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
-    if (direction == 0x01) { 
+    if (direction == DIRECTION_CCW) { 
         if (cStep-1 < 0) {         // wrap around
             cStep = MAX_STEP;
         } else {
@@ -59,7 +59,6 @@ void stepOnce(uint8_t direction) {
         } else { 
             cStep++; 
         }
-        cStep++; 
     }                         
 }
 
@@ -94,11 +93,11 @@ uint8_t limitDebounce() {
 
 // Homing Mode
 void homingMode() { // data = 0000 00 & direction & limitSw
-    while(MODE == 0 && (limitDebounce() == 0x00)) {                   // while the mode is unchanged and the switch is unpressed
+    while(MODE == 0 && (limitDebounce() == 0x00)) {          // while the mode is unchanged and the switch is unpressed
         stepOnce(DIRECTION);                                 // continuously step in the specified direction
         delayT(10000);
     }
-    cStep = 0;                                                             // reset current step #
+    cStep = 0;                                               // reset current step #
 }
 
 // Absolute Positioning Mode 1
@@ -165,6 +164,7 @@ void relPosMode(uint8_t direction, uint8_t numSteps) {
 }
 
 void run(uint8_t mode) {
+    uint8_t number = NUMBER;
     switch (MODE) {
         case 0 : // Homing mode
             homingMode();
@@ -176,7 +176,7 @@ void run(uint8_t mode) {
             absPosMode_Slice();
             break;
         case 3 : // Relative positioning mode
-            relPosMode(DIRECTION, NUMBER);
+            relPosMode(DIRECTION, number);
             break;
     }
 }

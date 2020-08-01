@@ -3,10 +3,6 @@
 
 int main() {
     gpioInit();
-    //uint8_t home = HOME;      // replace with home input pin
-    //uint8_t dir = DIRECTION;  // replace with direction input pin
-    //uint8_t mode = MODE;      // replace with mode input pin
-    //uint8_t start = START;    // replace with start input pin  
     *GPIO_PORTA_DATA_R = 0x00;  // READY output signal
 
     while(1) {
