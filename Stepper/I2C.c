@@ -44,18 +44,20 @@
 // Start of Code:
 //
 //*****************************************************************************
+uint32_t writeOffset = (0x1F<<2);   //write offset for pins 4 through 0. 4:SW1, 0:SW2, 3:Green, 2:Blue, 1:Red (in Port F)
 
+/*
 int main() {
 	//Call core functions in required sequence
 	int foo = 0;	//arbitrary integer value, in the system this integer will be the value sent to the controller
-	/*the controller will call read_colors to get the sort result:
+	//the controller will call read_colors to get the sort result:
 	* 0 = reject (colors other than skittle colors or bad data)
 	* 1 = red
 	* 2 = orange
 	* 3 = yellow
 	* 4 = green
 	* 5 = violet/purple
-	*/
+	
 	//uint8_t sensorVersion = 0;
 	setup();
 	
@@ -78,8 +80,9 @@ int main() {
 		
 	}
 	
+	
 }
-
+*/
 void setup(){
 	setup_clock();
 	setup_LEDs();
@@ -198,7 +201,7 @@ void setup_I2C() {
 	*gpiopur = 0xC0;				//pins 6 and 7 get pull-ups
 	*GPIOPCTL_A = 0x33000000;		//5: pins 6 and 7 get I2C1
 	delay(100);
-	*GPIODEN_A = 0xC0;			//Enable pins 6 and 7 of port A using the digital enable register. Must be done after clock provided and 3 clocks occured
+	*GPIODEN_A |= 0xC0;			//Enable pins 6 and 7 of port A using the digital enable register. Must be done after clock provided and 3 clocks occured
 	//blink(0x04);	//blue
 	*I2CMIMR = 0x0;			//ensure interrupts are disabled
 	//blink(0x08);	//green
@@ -381,9 +384,9 @@ int determine_color(uint16_t r, uint16_t g, uint16_t b) {
 	//the following assignments give the protion of the total light recieved seen by each of the 3 channels (as a percentage)
 	//the values are scaled to compensate for asymmetric color sensitivities as seen in the color sensor datasheet, page 6 figure 2
 	//from figure 2, these values were obtained by calculating the inverse of the peak magnitude of each channel's color response
-	redPart = (r*100)/sum;		//120 is color scaling modifier (originally 119)
-	greenPart = (g*150)/sum;	//135 is color scaling modifier (originally 155)
-	bluePart = (b*165)/sum;		//190 is color scaling modifier (originally 182)
+	redPart = (r*100)/sum;		//1.00 is color scaling modifier (originally 1.19)
+	greenPart = (g*150)/sum;	//1.50 is color scaling modifier (originally 1.55)
+	bluePart = (b*165)/sum;		//1.65 is color scaling modifier (originally 1.82)
 	/**/
 	/*
 	uartwrite('h');

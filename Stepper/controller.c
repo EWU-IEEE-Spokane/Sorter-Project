@@ -9,7 +9,7 @@
 #define YELLOW 0x00
 #define REJECT 0xFF
 
-uint8_t colors[5] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
+uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 
 void chuteToColor(int color) {
     absPosMode_Slice(colors[color]);

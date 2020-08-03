@@ -29,8 +29,10 @@ uint32_t* GPIO_PORTF_PUR_R = (uint32_t*) (0x40025000 + 0x510); // Port F Pull-up
 
 void PortA_Init(void) {               
     *SYSCTL_RCGCGPIO_R |= 0x01;       // activate clock on Port A
-    *GPIO_PORTA_DIR_R |= 0x7C;        // make PA6-2 pins output
-    *GPIO_PORTA_DEN_R |= 0x7C;        // enable digital I/O on PA6-2
+    //*GPIO_PORTA_DIR_R |= 0x7C;        // make PA6-2 pins output --original
+    *GPIO_PORTA_DIR_R |= 0x3C;        // make PA5-2 pins output to enable I2C1
+    //*GPIO_PORTA_DEN_R |= 0x7C;        // enable digital I/O on PA6-2 --original
+    *GPIO_PORTA_DEN_R |= 0x3C;        // enable digital I/O on PA5-2
 }
 
 void PortB_Init(void) {
