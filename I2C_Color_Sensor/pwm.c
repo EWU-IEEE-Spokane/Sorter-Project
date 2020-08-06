@@ -1,4 +1,4 @@
-//PWM CODE -----------------------------------------------------------
+#include "pwm.h"
 
 void configure_pwm(){
     //This initialization is based on the information in the datasheet starting on page 1230, primarily the initialization instructions on page 1239

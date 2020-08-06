@@ -14,7 +14,11 @@ all: I2C.bin
 
 I2C.axf: tiva.ld
 I2C.axf: startup.o
-I2C.axf: I2C.o
+I2C.axf: i2c.o
+I2C.axf: led.o
+I2C.axf: color_sensor.o
+I2C.axf: color_process.o
+I2C.axf: uart.o
 
 %.axf:
 	@echo arm-none-eabi-ld \

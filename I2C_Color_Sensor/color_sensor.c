@@ -1,3 +1,11 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include "led.h"
+#include "i2c.h"
+#include "uart.h"
+#include "color_sensor.h"
+#include "color_process.h"
+
 void config_sensor() {
 	//configure the color sensor registers by sending it addressed values over I2C
 	//blink(0X8);
@@ -20,38 +28,6 @@ void config_sensor() {
 }
 
 
-
-void single_write(uint8_t dataIn){
-	//write a single data byte on the I2C bus
-	volatile uint32_t *I2CMSA = (uint32_t *) (I2C1_BASE_ADDRESS + 0x000);	// I2C1 Master Slave Address
-	volatile uint32_t *I2CMDR = (uint32_t *) (I2C1_BASE_ADDRESS + 0x008);	// I2C1 Master Data Register
-	volatile uint32_t *I2CMCS = (uint32_t *) (I2C1_BASE_ADDRESS + 0x004);	// I2C1 Master Control/Status
-
-	
-	*I2CMSA = SENSOR_ADDRESS_WRITE;	//0 in bit 1 specifies write operation
-	*I2CMDR = dataIn; 	//data to be written
-	*I2CMCS = 0x7;	//I2CMSA specified write, so 0x7 starts a write operation with stop
-	wait_on_bus();
-	if(*I2CMCS & 0x8) blink(0x2);	//if data not acked, blink red
-	if(*I2CMCS & 0x4) blink(0x2);	//if address not acked, blink red
-}
-
-
-uint8_t single_read(){
-	//read a single data byte from the I2C bus
-	volatile uint32_t *I2CMSA = (uint32_t *) (I2C1_BASE_ADDRESS + 0x000);	// I2C1 Master Slave Address
-	volatile uint32_t *I2CMDR = (uint32_t *) (I2C1_BASE_ADDRESS + 0x008);	// I2C1 Master Data Register
-	volatile uint32_t *I2CMCS = (uint32_t *) (I2C1_BASE_ADDRESS + 0x004);	// I2C1 Master Control/Status
-	
-	*I2CMSA = SENSOR_ADDRESS_READ;	//1 in bit 1 specifies read operation
-	*I2CMCS = 0x7;	//I2CMSA specified read, so 0x7 starts a read operation with stop
-	wait_on_bus();
-	if(*I2CMCS & 0x8) blink(0x2);	//if data not acked, blink red
-	if(*I2CMCS & 0x4) blink(0x2);	//if address not acked, blink red
-	return *I2CMDR;
-}
-
-
 void write_sensor(uint8_t addressIn, uint8_t dataIn) {
 	//write a single data byte to the addressed register in the sensor
 	single_write(0x80|addressIn); 	//in first command byte, tell the sensor what register to move to (bit 7 enables commands)
@@ -67,23 +43,6 @@ uint8_t read_sensor(uint8_t addressIn) {
 	single_write(0x80|addressIn);	//1000 0000 + 0x12
 	data = single_read();
 	return data;
-}
-
-void wait_on_bus(){
-	uint32_t *I2CMCS = (uint32_t *) (I2C1_BASE_ADDRESS + 0x004);	// I2C1
-
-	delay(5000);	//fixed wait time, not optimal, but currently necessary.
-					//is the below bus wait loop not operational?
-	while(*I2CMCS & (1<<6)){
-		//wait until bus is not busy as indicated by bit 6, in the meantime, blink
-		blink(0xC); //blink teal LED to show waiting on bus. This is probably too long of a delay since the LED is on for so long
-	}
-	if(*I2CMCS & (1<<1)){
-		//if I2C module reports error as indicated by bit 1, show with blue LED
-		blink(0x04); //blink blue LED to show error
-
-		//add error handling code here -----------------------------------------------------------------------------
-	}
 }
 
 void wait_on_adc() {
