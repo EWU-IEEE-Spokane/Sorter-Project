@@ -96,7 +96,6 @@ void setup(){
 }
 
 
-
 void setup_clock() {
 	//initializes and configures the main clock that will be initially used and modified during runtime clock configuration. 
 	//The clock-control block diagram can be found on page 222 of the datasheet.
@@ -170,8 +169,6 @@ void delay(uint32_t d) {
 
 
 //I2C CODE STARTS ----------------------------------------------------------------------------
-
-
 
 void setup_I2C() {
 	//initialize I2C module 1 for 100Kbps on PA7 (SDA), PA6 (SCL)
@@ -460,7 +457,7 @@ int decideInf(char* decision, char max){
 }
 
 int decideMid(char* decision, char max, char min){
-	if(max=='r'){
+	if (max=='r') {
 		if(min=='b'){
 			strcpy(decision, "orange");
 			return 2;
@@ -468,7 +465,7 @@ int decideMid(char* decision, char max, char min){
 			strcpy(decision, "magenta");
 			return 0;
 		}
-	}else if(max=='g'){
+	} else if (max=='g'){
 		if(min=='b'){
 			strcpy(decision, "yellow-green");
 			return 0;
@@ -476,7 +473,7 @@ int decideMid(char* decision, char max, char min){
 			strcpy(decision, "blue-green");
 			return 0;
 		}
-	}else if(max=='b'){
+	} else if (max=='b'){
 		if(min=='g'){
 			strcpy(decision, "indigo");
 			return 0;
@@ -484,7 +481,7 @@ int decideMid(char* decision, char max, char min){
 			strcpy(decision, "light blue");
 			return 0;
 		}
-	}else{
+	} else {
 		strcpy(decision, "charMappingError");
 		return 0;
 	}

@@ -1,10 +1,5 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "led.h"
-#include "i2c.h"
-#include "uart.h"
-#include "color_sensor.h"
-#include "color_process.h"
 
 void config_sensor() {
 	//configure the color sensor registers by sending it addressed values over I2C
@@ -58,7 +53,7 @@ void wait_on_adc() {
 		}
 }
 
-void read_colors() {
+int read_colors() {
 	//read each color register and return the collection of data
 	uint16_t redData = 0x0;
 	uint16_t greenData = 0x0;
@@ -71,7 +66,7 @@ void read_colors() {
 	//float redValue = 0x0;
 	//float greenValue = 0x0;
 	//float blueValue = 0x0;
-	
+	wait_on_adc();
 
 	//read color value registers and combine bytes:
 	whiteValue = (read_sensor(0x15)<<8) + read_sensor(0x14);
@@ -109,5 +104,5 @@ void read_colors() {
 	uartwrite('S');
 	uartwrite('-');
 	say_two_bytes(sum);
-	determine_color(redData, greenData, blueData);
+	return determine_color(redData, greenData, blueData);
 }
