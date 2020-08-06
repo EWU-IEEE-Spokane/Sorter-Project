@@ -14,10 +14,10 @@ all: stepper.bin
 
 stepper.axf: tiva.ld
 stepper.axf: startup.o
-stepper.axf: umc_init.o
-stepper.axf: controller.o
+stepper.axf: sorter_init.o
+stepper.axf: sorter.o
 stepper.axf: stepper.o
-stepper.axf: I2C.c
+stepper.axf: I2C.o
 
 %.axf:
 	@echo arm-none-eabi-ld \

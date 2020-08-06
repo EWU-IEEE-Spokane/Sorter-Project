@@ -3,3 +3,4 @@ Stepper/*.bin
 Stepper/*.axf
 Stepper/*.d
 Stepper/.vscode/*
+I2C_Color_Sensor/*.{o, bin, axf, d}

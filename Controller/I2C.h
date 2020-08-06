@@ -77,5 +77,5 @@ void new_line();
 //
 //*****************************************************************************
 
-uint32_t writeOffset = (0x1F<<2);   //write offset for pins 4 through 0. 4:SW1, 0:SW2, 3:Green, 2:Blue, 1:Red (in Port F)
+// uint32_t writeOffset;
 #endif

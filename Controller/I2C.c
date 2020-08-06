@@ -44,18 +44,20 @@
 // Start of Code:
 //
 //*****************************************************************************
+uint32_t writeOffset = (0x1F<<2);
 
+/*
 int main() {
 	//Call core functions in required sequence
 	int foo = 0;	//arbitrary integer value, in the system this integer will be the value sent to the controller
-	/*the controller will call read_colors to get the sort result:
+	the controller will call read_colors to get the sort result:
 	* 0 = reject (colors other than skittle colors or bad data)
 	* 1 = red
 	* 2 = orange
 	* 3 = yellow
 	* 4 = green
 	* 5 = violet/purple
-	*/
+	
 	//uint8_t sensorVersion = 0;
 	setup();
 	
@@ -79,6 +81,7 @@ int main() {
 	}
 	
 }
+*/
 
 void setup(){
 	setup_clock();
