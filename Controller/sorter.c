@@ -27,6 +27,19 @@ void turnTable() {
     relPosMode(DIRECTION_CCW, MAX_STEP / 3, GPIO_PORTA_DATA_R);
 }
 
+void singleSort() {
+    // load skittle (turn auger)
+    // turnTable (move skittle to sensor)
+    turnTable();
+
+    // read color
+    // move chute to color
+    chuteToColor(read_colors());
+
+    // turnTable (drop skittle to chute)
+    turnTable();
+}
+
 int main() {
     configure();
     
