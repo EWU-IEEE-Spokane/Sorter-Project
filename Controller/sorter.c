@@ -34,6 +34,7 @@ void singleSort() {
 
     // read color
     // move chute to color
+    
     chuteToColor(read_colors());
 
     // turnTable (drop skittle to chute)
