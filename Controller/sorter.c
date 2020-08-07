@@ -4,6 +4,8 @@
 #include "i2c.h"
 #include "color_sensor.h"
 #include "clock_init.h"
+#include "uart.h"
+#include "led.h"
 
 uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 

@@ -11,5 +11,4 @@ void single_write(uint8_t dataIn);
 uint8_t single_read();
 void wait_on_bus();
 
-
 #endif

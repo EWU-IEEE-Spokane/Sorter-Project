@@ -4,8 +4,6 @@
 #include "color_process.h"
 #include "uart.h"
 
-int main() {}
-
 int determine_color(uint16_t r, uint16_t g, uint16_t b) {
 	uint32_t sum = 0;
 	uint32_t redPart = 0;

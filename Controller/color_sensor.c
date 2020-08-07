@@ -1,5 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "color_sensor.h"
+#include "led.h"
+#include "i2c.h"
+#include "uart.h"
+#include "color_process.h"
 
 void config_sensor() {
 	//configure the color sensor registers by sending it addressed values over I2C

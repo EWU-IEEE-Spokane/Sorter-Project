@@ -1,4 +1,4 @@
-all: stepper.bin
+all: sorter.bin
 
 %.o: %.c
 	@echo arm-none-eabi-gcc -ggdb \
@@ -12,12 +12,17 @@ all: stepper.bin
 		-fdata-sections -MD -std=c99 -Wall \
 		-pedantic -c -o ${@} ${<}
 
-stepper.axf: tiva.ld
-stepper.axf: startup.o
-stepper.axf: sorter_init.o
-stepper.axf: sorter.o
-stepper.axf: stepper.o
-stepper.axf: I2C.o
+sorter.axf: tiva.ld
+sorter.axf: startup.o
+sorter.axf: sorter_init.o
+sorter.axf: sorter.o
+sorter.axf: stepper.o
+sorter.axf: i2c.o
+sorter.axf: clock_init.o 
+sorter.axf: color_process.o 
+sorter.axf: color_sensor.o 
+sorter.axf: led.o
+sorter.axf: uart.o
 
 %.axf:
 	@echo arm-none-eabi-ld \
