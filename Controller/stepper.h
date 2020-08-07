@@ -18,14 +18,12 @@ struct State {
 typedef const struct State State_t;
 
 void delayT(int maxCount);
-void stepOnce(uint8_t direction);
-void debounce(uint8_t* input, uint8_t* flag);
-void homingMode();
-void absPosMode_360();
-void absPosMode_Slice(uint8_t stepNum);
-void relPosMode(uint8_t direction, uint8_t numSteps);
-void run(uint8_t mode);
-uint8_t limitDebounce();
-uint16_t serialIn();
+void stepOnce(uint8_t direction, uint32_t* output);
+void homingMode(uint32_t* home, uint32_t* output);
+void absPosMode_360(uint8_t number, uint32_t* output);
+void absPosMode_Slice(uint8_t stepNum, uint32_t* output);
+void relPosMode(uint8_t direction, uint8_t numSteps, uint32_t* output);
+void run(uint8_t mode, uint8_t direction, uint8_t number, uint32_t* home, uint32_t* output);
+uint8_t limitDebounce(uint32_t* inputSW);
 
 #endif

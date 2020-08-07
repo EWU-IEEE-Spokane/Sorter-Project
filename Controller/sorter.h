@@ -10,5 +10,7 @@
 
 void chuteToColor(int color);
 void howTheTurnTables();
+void configure();
+void turnTable();
 
 #endif
