@@ -6,6 +6,7 @@
 #include "clock_init.h"
 #include "uart.h"
 #include "led.h"
+#include "pwm.h"
 
 uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 
@@ -16,6 +17,7 @@ void configure() {
     setup_LEDs();
     setup_uart();
     config_sensor();
+    configure_pwm();
 }
 
 void chuteToColor(int color) {
