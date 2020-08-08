@@ -12,12 +12,14 @@ uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 
 void configure() {
     setup_clock();
-    gpioInit();
+    
     setup_I2C();
     setup_LEDs();
     setup_uart();
-    config_sensor();
+    //config_sensor();
     configure_pwm();
+
+    gpioInit();
 }
 
 void chuteToColor(int color) {
@@ -26,29 +28,31 @@ void chuteToColor(int color) {
 
 void turnTable() {
     // IMPORTANT NOTE: MAX_STEP IS NOT DIVISIBLE BY 3, THIS WILL CAUSE DRIFT
-    relPosMode(DIRECTION_CCW, MAX_STEP / 3, GPIO_PORTA_DATA_R);
+    relPosMode(DIRECTION_CW, MAX_STEP / 3, GPIO_PORTA_DATA_R);
 }
 
 void singleSort() {
-    // load skittle (turn auger)
-    // turnTable (move skittle to sensor)
+    // load skittle A
+    // move skittle B to sensor
+    // dispense skittle C
     turnTable();
 
-    // read color
-    // move chute to color
-    
+    // read color of skittle B
+    // move chute to skittle B color's bin
     chuteToColor(read_colors());
 
-    // turnTable (drop skittle to chute)
-    turnTable();
+    // on next iteration, skittle B becomes skittle C; A becomes B
 }
 
 int main() {
     configure();
     
     while (1) {
-        chuteToColor(read_colors());
-        homingMode(GPIO_PORTB_DATA_R, GPIO_PORTA_DATA_R);
+        //chuteToColor(read_colors());
+        //homingMode(GPIO_PORTB_DATA_R, GPIO_PORTA_DATA_R);
+        for (int i = 0; i < 6; i++) {
+            chuteToColor(i);
+        }
         delayT(1000000);
     }
 
