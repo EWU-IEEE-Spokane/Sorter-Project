@@ -64,14 +64,14 @@ void stepOnce(uint8_t direction, uint32_t* output) {
 
 // Debounce limit switch
 uint8_t limitDebounce(uint32_t* inputSW_Reg, uint8_t inputSW_Pin) {
-    if ((*inputSW_Reg & (1 << inputSW_Pin)) >> inputSW_Pin == 0x00) {       // If switch activated
+    if (((*inputSW_Reg & (0x01U << inputSW_Pin)) >> inputSW_Pin) == 0x00U) {       // If switch activated
         delayT(1000);         // Wait for bouncing to stop
-        if ((*inputSW_Reg & (1 << inputSW_Pin)) >> inputSW_Pin == 0x00) {   // If switch still activated
-            return 0x01;      // Report switch activated
+        if (((*inputSW_Reg & (0x01U << inputSW_Pin)) >> inputSW_Pin) == 0x00U) {   // If switch still activated
+            return 0x01U;      // Report switch activated
         }
-        return 0x00;          // Otherwise: switch is unactivated
+        return (uint8_t) 0;          // Otherwise: switch is unactivated
     } else {
-        return 0x00;
+        return (uint8_t) 0;
     }
 }
 
