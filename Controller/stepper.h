@@ -19,11 +19,11 @@ typedef const struct State State_t;
 
 void delayT(int maxCount);
 void stepOnce(uint8_t direction, uint32_t* output);
-void homingMode(uint32_t* home, uint32_t* output);
+void homingMode(uint32_t* homeSW_Reg, uint8_t homeSW_Pin, uint32_t* output);
 void absPosMode_360(uint8_t number, uint32_t* output);
 void absPosMode_Slice(uint8_t stepNum, uint32_t* output);
 void relPosMode(uint8_t direction, uint8_t numSteps, uint32_t* output);
 void run(uint8_t mode, uint8_t direction, uint8_t number, uint32_t* home, uint32_t* output);
-uint8_t limitDebounce(uint32_t* inputSW);
+uint8_t limitDebounce(uint32_t* inputSW_Reg, uint8_t inputSW_Pin);
 
 #endif

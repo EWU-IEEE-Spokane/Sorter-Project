@@ -13,7 +13,7 @@ uint32_t* GPIO_PORTB_PDR_R  = (uint32_t*) (0x40005000 + 0x514); // Port B Pull-d
 
 uint32_t* GPIO_PORTF_DIR_R = (uint32_t*) (0x40025000 + 0x400); // Port F direction
 uint32_t* GPIO_PORTF_DEN_R = (uint32_t*) (0x40025000 + 0x51C); // Port F Digital Enable
-uint32_t* GPIO_PORTF_DATA_R = (uint32_t*) (0x40025000 + 0x40); // Port F Data for Pin PF0 (sw2)
+uint32_t* GPIO_PORTF_DATA_R = (uint32_t*) (0x40025000 + 0x44); // Port F Data for Pin PF4 (sw1)
 uint32_t* GPIO_PORTF_PUR_R = (uint32_t*) (0x40025000 + 0x510); // Port F Pull-up Resistors
 
 void PortA_Init(void) {               
@@ -31,9 +31,9 @@ void PortB_Init(void) {
 
 void PortF_Init(void) {               // initialize sw2
     *SYSCTL_RCGCGPIO_R |= 0x20;       // activate clock on Port F
-    *GPIO_PORTF_DIR_R &= ~0x10;       // make PF4 an input pin
-    *GPIO_PORTF_DEN_R |= 0x10;        // enable digital i/o on PF4
-    *GPIO_PORTF_PUR_R |= 0x10;        // enable PUR on sw2
+    *GPIO_PORTF_DIR_R &= ~0x11;       // make PF4&0 input
+    *GPIO_PORTF_DEN_R |= 0x11;        // enable digital i/o on PF4
+    *GPIO_PORTF_PUR_R |= 0x11;        // enable PUR on sw2 & sw1
 }
 
 void gpioInit(void) {

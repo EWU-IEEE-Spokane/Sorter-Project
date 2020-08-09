@@ -13,11 +13,11 @@ uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 void configure() {
     setup_clock();
     
-    setup_I2C();
+   // setup_I2C();
     setup_LEDs();
-    setup_uart();
-    //config_sensor();
-    configure_pwm();
+   // setup_uart();
+   // config_sensor();
+   // configure_pwm();
 
     gpioInit();
 }
@@ -41,19 +41,36 @@ void singleSort() {
     // move chute to skittle B color's bin
     chuteToColor(read_colors());
 
-    // on next iteration, skittle B becomes skittle C; A becomes B
+    // On next iteration, skittle B becomes skittle C; A becomes B
 }
 
 int main() {
     configure();
+
+    // 3 Green blinks to show successful configure() execution
+    blink(0x08);
+    blink(0x08);
+    blink(0x08);
     
     while (1) {
-        //chuteToColor(read_colors());
-        //homingMode(GPIO_PORTB_DATA_R, GPIO_PORTA_DATA_R);
+        // Wait for SW1 to be pressed
+        while ((*GPIO_PORTF_DATA_R & 0x10) >> 4) { continue; }
+
+        /* ====================== TEST CODE WITHOUT SENSOR ============================= */
+        // Move to home position
+        homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
+        // homingMode(GPIO_PORTF_DATA_R, 4, GPIO_PORTA_DATA_R); // Use SW2 for home switch
+
+        // Wait at home for short period
+        delayT(1000000);
+
+        // Run test sequence
         for (int i = 0; i < 6; i++) {
             chuteToColor(i);
         }
-        delayT(1000000);
+        /* ========================== END TEST CODE ==================================== */
+
+        // chuteToColor(read_colors()); // Uncomment to run with sensor
     }
 
     return 0;

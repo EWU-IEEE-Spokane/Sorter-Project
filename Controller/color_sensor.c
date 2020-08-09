@@ -31,7 +31,7 @@ void config_sensor() {
 void write_sensor(uint8_t addressIn, uint8_t dataIn) {
 	//write a single data byte to the addressed register in the sensor
 	single_write(0x80|addressIn); 	//in first command byte, tell the sensor what register to move to (bit 7 enables commands)
-	single_write(dataIn);	//write data to the above register
+	single_write(dataIn);	        //write data to the above register
 }
 
 
