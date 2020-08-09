@@ -13,11 +13,11 @@ uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 void configure() {
     setup_clock();
     
-   // setup_I2C();
+    setup_I2C();
     setup_LEDs();
-   // setup_uart();
-   // config_sensor();
-   // configure_pwm();
+    setup_uart();
+    config_sensor();
+    configure_pwm();
 
     gpioInit();
 }
@@ -57,9 +57,10 @@ int main() {
         while ((*GPIO_PORTF_DATA_R & 0x10) >> 4) { continue; }
 
         /* ====================== TEST CODE WITHOUT SENSOR ============================= */
+        delayT(1000000);
         // Move to home position
-        homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
-        // homingMode(GPIO_PORTF_DATA_R, 4, GPIO_PORTA_DATA_R); // Use SW2 for home switch
+        //homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
+        homingMode(GPIO_PORTF_DATA_R, 4, GPIO_PORTA_DATA_R); // Use SW1 for home switch
 
         // Wait at home for short period
         delayT(1000000);
