@@ -60,7 +60,7 @@ int main() {
         delayT(1000000);
         // Move to home position
         //homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
-        homingMode(GPIO_PORTF_DATA_R, 4, GPIO_PORTA_DATA_R); // Use SW1 for home switch
+        homingMode(GPIO_PORTF_DATA_R, 0, GPIO_PORTA_DATA_R); // Use SW1 for home switch
 
         // Wait at home for short period
         delayT(1000000);
