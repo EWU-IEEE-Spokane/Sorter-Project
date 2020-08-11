@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include "stepper.h"
 
+#define DELAY_COUNT 15000
+
 uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
 uint8_t cState = 0; // Current motor state
-#define DELAY_COUNT 15000
 
 // States in the 28byJ FSM
 State_t byjFSM[4] = {
@@ -44,7 +45,7 @@ void delayT(int maxCount) {
 // Direction map: 0x00 = CW; 0x01 = CCW; 
 void stepOnce(uint8_t direction, uint32_t* output) {
     cState = nema2FSM[cState].next[direction]; // Move to next state defined by direction
-    *output = nema2FSM[cState].out;  // Output motor data defined in new state
+    *output = nema2FSM[cState].out;            // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
     if (direction == DIRECTION_CCW) { 
@@ -78,7 +79,7 @@ uint8_t limitDebounce(uint32_t* inputSW_Reg, uint8_t inputSW_Pin) {
 // Homing Mode
 void homingMode(uint32_t* homeSW_Reg, uint8_t homeSW_Pin, uint32_t* output) { // data = 0000 00 & direction & limitSw
     while((limitDebounce(homeSW_Reg, homeSW_Pin) == 0x00)) {                  // while the mode is unchanged and the switch is unpressed
-        stepOnce(DIRECTION_CCW, output);                                      // continuously step in the specified direction
+        stepOnce(DIRECTION_CW, output);                                      // continuously step in the specified direction
         delayT(DELAY_COUNT);
     }
     cStep = 0;                                      // reset current step #

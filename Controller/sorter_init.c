@@ -8,7 +8,7 @@ uint32_t* GPIO_PORTA_DATA_R = (uint32_t*) (0x40004000 + 0x1F0);// Port A Data fo
 
 uint32_t* GPIO_PORTB_DIR_R  = (uint32_t*) (0x40005000 + 0x400); // Port B direction
 uint32_t* GPIO_PORTB_DEN_R  = (uint32_t*) (0x40005000 + 0x51C); // Port B Digital Enable
-uint32_t* GPIO_PORTB_DATA_R = (uint32_t*) (0x40005000 + 0x07C); // Port B Data Pins 4-0
+uint32_t* GPIO_PORTB_DATA_R = (uint32_t*) (0x40005000 + 0x0FC); // Port B Data Pins 5-0
 uint32_t* GPIO_PORTB_PDR_R  = (uint32_t*) (0x40005000 + 0x514); // Port B Pull-down Resistors
 
 uint32_t* GPIO_PORTF_DIR_R = (uint32_t*) (0x40025000 + 0x400); // Port F direction
@@ -26,9 +26,10 @@ void PortA_Init(void) {
 
 void PortB_Init(void) {
     *SYSCTL_RCGCGPIO_R |= 0x02;       // activate clock on Port B
-    *GPIO_PORTB_DIR_R &= ~0x1F;       // make PB4-0 pins input
-    *GPIO_PORTB_DEN_R |= 0x1F;        // enable digital I/O on PB4-0
-    *GPIO_PORTB_PDR_R |= 0x1F;        // enable pull-down resistors
+    *GPIO_PORTB_DIR_R &= ~0x03;       // make PB1-0 pins input
+    *GPIO_PORTB_DIR_R |= 0x3C;        // make PB5-2 output
+    *GPIO_PORTB_DEN_R |= 0x3F;        // enable digital I/O on PB5-0
+    *GPIO_PORTB_PDR_R |= 0x03;        // enable pull-down resistor for PB1-0
 }
 
 void PortF_Init(void) {               // initialize sw2
