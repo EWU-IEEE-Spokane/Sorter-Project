@@ -1,7 +1,7 @@
-all: I2C.bin
+all: sorter.bin
 
 %.o: %.c
-	@echo arm-none-eabi-gcc \
+	@echo arm-none-eabi-gcc -ggdb \
 		-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 \
 		-mfloat-abi=softfp -ffunction-sections \
 		-fdata-sections -MD -std=c99 -Wall \
@@ -12,9 +12,18 @@ all: I2C.bin
 		-fdata-sections -MD -std=c99 -Wall \
 		-pedantic -c -o ${@} ${<}
 
-I2C.axf: tiva.ld
-I2C.axf: startup.o
-I2C.axf: I2C.o
+sorter.axf: tiva.ld
+sorter.axf: startup.o
+sorter.axf: sorter_init.o
+sorter.axf: sorter.o
+sorter.axf: stepper.o
+sorter.axf: i2c.o
+sorter.axf: clock_init.o 
+sorter.axf: color_process.o 
+sorter.axf: color_sensor.o 
+sorter.axf: led.o
+sorter.axf: uart.o
+sorter.axf: pwm.o
 
 %.axf:
 	@echo arm-none-eabi-ld \

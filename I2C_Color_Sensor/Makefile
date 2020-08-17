@@ -1,7 +1,7 @@
-all: stepper.bin
+all: I2C.bin
 
 %.o: %.c
-	@echo arm-none-eabi-gcc -ggdb \
+	@echo arm-none-eabi-gcc \
 		-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 \
 		-mfloat-abi=softfp -ffunction-sections \
 		-fdata-sections -MD -std=c99 -Wall \
@@ -12,12 +12,13 @@ all: stepper.bin
 		-fdata-sections -MD -std=c99 -Wall \
 		-pedantic -c -o ${@} ${<}
 
-stepper.axf: tiva.ld
-stepper.axf: startup.o
-stepper.axf: umc_init.o
-stepper.axf: controller.o
-stepper.axf: stepper.o
-stepper.axf: I2C.o
+I2C.axf: tiva.ld
+I2C.axf: startup.o
+I2C.axf: i2c.o
+I2C.axf: led.o
+I2C.axf: color_sensor.o
+I2C.axf: color_process.o
+I2C.axf: uart.o
 
 %.axf:
 	@echo arm-none-eabi-ld \

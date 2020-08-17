@@ -20,10 +20,14 @@
 // 
 // This is part of revision 2.1.4.178 of the EK-TM4C123GXL Firmware Package.
 //
+// This file inlcudes a switch handler for interrups (EENG260 Final task 2 and 3)
+// The changes are in the vector table for port F, including stdbool.h, prototyping the handler,
+// and the switch_handler method at the bottom of the code. 
+//
 //*****************************************************************************
 
 #include <stdint.h>
-
+#include <stdbool.h>    //Boolean for flag used in switch handler
 /* #include "inc/hw_nvic.h" */
 #define NVIC_CPAC               0xE000ED88  // Coprocessor Access Control
 #define NVIC_CPAC_CP11_M        0x00C00000  // CP11 Coprocessor Access
@@ -46,6 +50,7 @@ void ResetISR(void);
 static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
+static void switch_handler(void);       //added out interrupt's prototype here
 
 //*****************************************************************************
 //
@@ -117,7 +122,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Analog Comparator 2
     IntDefaultHandler,                      // System Control (PLL, OSC, BO)
     IntDefaultHandler,                      // FLASH Control
-    IntDefaultHandler,                      // GPIO Port F
+    switch_handler,                         //IntDefaultHandler,  // GPIO Port F
     IntDefaultHandler,                      // GPIO Port G
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
@@ -350,4 +355,13 @@ IntDefaultHandler(void)
     while(1)
     {
     }
+}
+
+//extern bool flag;       //this is the key element that links main() and the interrupt. Extern looks for an external variable, and 'flag' is defined in the .c source code
+
+static void switch_handler(void) { //need to put this in startup.c in the right place to be called
+    unsigned long *gpioICR = (unsigned long *)  (0x40025000+0x41C);
+    //flag++;
+    *gpioICR = 0xFF;    //clear all interrups for port F
+    
 }

@@ -9,7 +9,7 @@ int main() {
         *GPIO_PORTA_DATA_R |= (0x01 << 6);      // Set Ready Bit
         if (START == 0x01) {
             *GPIO_PORTA_DATA_R &= ~(0x01 << 6); // Clear Ready Bit
-            run(MODE);
+            run(MODE, DIRECTION, NUMBER, GPIO_PORTB_DATA_R, GPIO_PORTA_DATA_R);
         }
         break;
     }

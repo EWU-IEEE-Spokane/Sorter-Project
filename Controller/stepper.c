@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "stepper.h"
 
+#define DELAY_COUNT 15000
+
 uint16_t cStep = 0; // Current step number; i.e. address for absolute positioning; 0 should be "home" position
 uint8_t cState = 0; // Current motor state
 
@@ -43,7 +45,7 @@ void delayT(int maxCount) {
 // Direction map: 0x00 = CW; 0x01 = CCW; 
 void stepOnce(uint8_t direction, uint32_t* output) {
     cState = nema2FSM[cState].next[direction]; // Move to next state defined by direction
-    *output = nema2FSM[cState].out;  // Output motor data defined in new state
+    *output = nema2FSM[cState].out;            // Output motor data defined in new state
     
     // Update cStep--this algorithm can be improved
     if (direction == DIRECTION_CCW) { 
@@ -62,25 +64,25 @@ void stepOnce(uint8_t direction, uint32_t* output) {
 }
 
 // Debounce limit switch
-uint8_t limitDebounce(uint32_t* inputSW) {
-    if (*inputSW == 0x00) {       // If switch activated
+uint8_t limitDebounce(uint32_t* inputSW_Reg, uint8_t inputSW_Pin) {
+    if (((*inputSW_Reg & (0x01U << inputSW_Pin)) >> inputSW_Pin) == 0x00U) {       // If switch activated
         delayT(1000);         // Wait for bouncing to stop
-        if (*inputSW == 0x00) {   // If switch still activated
-            return 0x01;      // Report switch activated
+        if (((*inputSW_Reg & (0x01U << inputSW_Pin)) >> inputSW_Pin) == 0x00U) {   // If switch still activated
+            return 0x01U;      // Report switch activated
         }
-        return 0x00;          // Otherwise: switch is unactivated
+        return (uint8_t) 0;          // Otherwise: switch is unactivated
     } else {
-        return 0x00;
+        return (uint8_t) 0;
     }
 }
 
 // Homing Mode
-void homingMode(uint32_t* home, uint32_t* output) { // data = 0000 00 & direction & limitSw
-    while((limitDebounce(home) == 0x00)) {          // while the mode is unchanged and the switch is unpressed
-        stepOnce(DIRECTION_CCW, output);                                 // continuously step in the specified direction
-        delayT(10000);
+void homingMode(uint32_t* homeSW_Reg, uint8_t homeSW_Pin, uint32_t* output) { // data = 0000 00 & direction & limitSw
+    while((limitDebounce(homeSW_Reg, homeSW_Pin) == 0x00)) {                  // while the mode is unchanged and the switch is unpressed
+        stepOnce(DIRECTION_CW, output);                                      // continuously step in the specified direction
+        delayT(DELAY_COUNT);
     }
-    cStep = 0;                                               // reset current step #
+    cStep = 0;                                      // reset current step #
 }
 
 // Absolute Positioning Mode 1
@@ -109,7 +111,7 @@ void absPosMode_360(uint8_t number, uint32_t* output) {
     // Continuously stepOnce in determined direction until cStep=="data"
     while(cStep != number) {
         stepOnce(direction, output);
-        delayT(10000);
+        delayT(DELAY_COUNT);
     }
 }
 
@@ -132,7 +134,7 @@ void absPosMode_Slice(uint8_t stepNum, uint32_t* output) {
     // Continuously stepOnce in determined direction until cStep=="data"
     while(cStep != stepNum) {
         stepOnce(direction, output);
-        delayT(10000);
+        delayT(DELAY_COUNT);
     }
 }
 
@@ -142,14 +144,14 @@ void absPosMode_Slice(uint8_t stepNum, uint32_t* output) {
 void relPosMode(uint8_t direction, uint8_t numSteps, uint32_t* output) {
     for (int i = 0; i < numSteps; i++) {            
         stepOnce(direction, output);
-        delayT(10000);
+        delayT(DELAY_COUNT);
     }
 }
 
 void run(uint8_t mode, uint8_t direction, uint8_t number, uint32_t* home, uint32_t* output) {
     switch (mode) {
         case 0 : // Homing mode
-            homingMode(home, output);
+            homingMode(home, 0, output);
             break;
         case 1 : // Absolute positioning mode full range
             absPosMode_360(number, output);
