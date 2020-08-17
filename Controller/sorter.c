@@ -28,6 +28,8 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  *      PF2: ON-BOARD BLUE LED
  *      PF3: ON-BOARD GREEN LED
  *      PF4: SW1 (TEST START)
+ * 
+ *      PB6: Stop interrupt
  */
 
 
@@ -118,6 +120,8 @@ void singleSort() {
 
     //hopperCycle();
 }
+
+
 
 
 int main() {

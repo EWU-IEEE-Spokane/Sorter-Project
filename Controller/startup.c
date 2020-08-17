@@ -50,7 +50,7 @@ void ResetISR(void);
 static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
-static void switch_handler(void);       //added out interrupt's prototype here
+static void StopHandler(void);
 
 //*****************************************************************************
 //
@@ -93,7 +93,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The PendSV handler
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
-    IntDefaultHandler,                      // GPIO Port B
+    StopHandler,                            // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
     IntDefaultHandler,                      // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
@@ -122,7 +122,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Analog Comparator 2
     IntDefaultHandler,                      // System Control (PLL, OSC, BO)
     IntDefaultHandler,                      // FLASH Control
-    switch_handler,                         //IntDefaultHandler,  // GPIO Port F
+    IntDefaultHandler,                      // GPIO Port F
     IntDefaultHandler,                      // GPIO Port G
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
@@ -357,11 +357,13 @@ IntDefaultHandler(void)
     }
 }
 
-//extern bool flag;       //this is the key element that links main() and the interrupt. Extern looks for an external variable, and 'flag' is defined in the .c source code
+/* Interrupt handler for stop button */
+static void 
+StopHandler(void) 
+{
+    while(1)
+    {
+    }
+} 
 
-static void switch_handler(void) { //need to put this in startup.c in the right place to be called
-    unsigned long *gpioICR = (unsigned long *)  (0x40025000+0x41C);
-    //flag++;
-    *gpioICR = 0xFF;    //clear all interrups for port F
-    
-}
+
