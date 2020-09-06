@@ -24,6 +24,7 @@ sorter.axf: color_sensor.o
 sorter.axf: led.o
 sorter.axf: uart.o
 sorter.axf: pwm.o
+sorter.axf: timer.o
 
 %.axf:
 	@echo arm-none-eabi-ld \

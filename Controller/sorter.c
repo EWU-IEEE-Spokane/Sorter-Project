@@ -7,6 +7,7 @@
 #include "uart.h"
 #include "led.h"
 #include "pwm.h"
+#include "timer.h"
 
 #define TABLE_OFFSET_FROM_HOME 0x00
 
@@ -35,11 +36,12 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  */
 void configure() {
     setup_clock();
+    Config_SysTick();
     
     setup_I2C();
     setup_LEDs();
     setup_uart();
-    config_sensor();
+    //  config_sensor();
     configure_pwm();
 
     gpioInit();
@@ -83,7 +85,7 @@ void turnTable() {
 void homeTable() {
     // Move to home switch
     homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R);
-    delayT(100000);
+    ms_delay(10000);
     // Adjust for offset from home switch triggering
     relPosMode(DIRECTION_CCW, TABLE_OFFSET_FROM_HOME, GPIO_PORTA_DATA_R);
 }
@@ -123,27 +125,27 @@ int main() {
     while (1) {
         while ((*GPIO_PORTF_DATA_R & 0x10) >> 4) { ; } /* Wait for SW1 to be pressed */
 
-        /* ====================== TEST CODE WITH SENSOR ================================ */
+        /* ====================== TEST CODE WITH SENSOR ================================ 
         homeTable();
         chuteToColor(read_colors());
 
-        /* ====================== TEST CODE WITHOUT SENSOR ============================= /
-        delayT(1000000);
+         ====================== TEST CODE WITHOUT SENSOR ============================= */
+        //ms_delay(10000);
         // Move to home position
-        // homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
+         homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
         // homingMode(GPIO_PORTF_DATA_R, 0, GPIO_PORTA_DATA_R); // Use SW2 for home switch
-        homeTable();
+        //homeTable();
 
         // Wait at home for short period
-        delayT(100000000);
+        ms_delay(10000);
 
         // Run test sequence
         for (int i = 0; i < 200; i++) {
             //chuteToColor(i);
             turnTable();
-            delayT(1000000);
+            ms_delay(1000);
         }
-         ========================== END TEST CODE ==================================== */
+         /*========================== END TEST CODE ==================================== */
 
 
         /* =========================== CONTROL LOOP ==================================== 
