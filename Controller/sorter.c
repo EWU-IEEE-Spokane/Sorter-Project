@@ -29,7 +29,7 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  *      PF3: ON-BOARD GREEN LED
  *      PF4: SW1 (TEST START)
  * 
- *      PB6: Stop interrupt
+ *      PB7: Stop interrupt
  */
 
 
@@ -39,6 +39,7 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  * function.
  */
 void configure() {
+    Disable_Interrupts();
     setup_clock();
     Config_SysTick();
     
@@ -49,6 +50,7 @@ void configure() {
     configure_pwm();
 
     gpioInit();
+    Enable_Interrupts();
 }
 
 

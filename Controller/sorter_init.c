@@ -15,8 +15,8 @@ uint32_t* GPIO_PORTB_IS     = (uint32_t*) (0x40005000 + 0x404); // Port B Interr
 uint32_t* GPIO_PORTB_IM     = (uint32_t*) (0x40005000 + 0x410); // Interrupt mask
 uint32_t* GPIO_PORTB_IBE    = (uint32_t*) (0x40005000 + 0x408); // Interrupt both edges
 uint32_t* GPIO_PORTB_IEV    = (uint32_t*) (0x40005000 + 0x40C); // Interrupt event
-uint32_t* GPIO_PORTB_RIS    = (uint32_t*) (0x40005000 + 0x414); // Raw interrupt status
-uint32_t* GPIO_PORTB_ICR    = (uint32_t*) (0x40005000 + 0x41C); // Interrupt clear
+//uint32_t* GPIO_PORTB_RIS    = (uint32_t*) (0x40005000 + 0x414); // Raw interrupt status
+//uint32_t* GPIO_PORTB_ICR    = (uint32_t*) (0x40005000 + 0x41C); // Interrupt clear
 
 uint32_t* GPIO_PORTF_DIR_R  = (uint32_t*) (0x40025000 + 0x400); // Port F direction
 uint32_t* GPIO_PORTF_LOCK_R = (uint32_t*) (0x40025000 + 0x520); // Port F Lock register
@@ -38,12 +38,15 @@ void PortB_Init(void) {
     *GPIO_PORTB_DEN_R |= 0xFF;        // enable digital I/O on PB7-0
     *GPIO_PORTB_PDR_R |= 0xC3;        // enable pull-down resistor for PB1-0, PB7-6
 
-    *GPIO_PORTB_IM    &= ~0x80;       // disable interrupts on pin 7
-    *GPIO_PORTB_IS    &= ~0x80;       // make pin 7 edge triggered
-    *GPIO_PORTB_IBE   &= ~0x80;       // don't trigger at both edges
-    *GPIO_PORTB_IEV   |= 0x80;        // rising edge triggers
-    *GPIO_PORTB_ICR   |= 0x80;        // clear RIS and MIS registers
-    *GPIO_PORTB_IM    |= 0x80;        // enable interrupts on pin 7
+    *GPIO_PORTB_IM    &= ~0x82;       // disable interrupts on pin 7,1
+    *GPIO_PORTB_IS    &= ~0x82;       // make pin 7,1 edge triggered
+    *GPIO_PORTB_IBE   &= ~0x82;       // don't trigger at both edges
+    *GPIO_PORTB_IEV   |= 0x82;        // rising edge triggers
+    GPIO_PORTB_ICR    |= 0x82;        // clear RIS and MIS registers
+    *GPIO_PORTB_IM    |= 0x82;        // enable interrupts on pin 7,1
+
+    NVIC_EN0_R        |= 0x02;        // enable port B interrupts (interrupt #1)
+    NVIC_PRI0_R       = (NVIC_PRI0_R&0xFFFF1FFF)|(0x01 << 13); // set port B priority to 1
 }
 
 void PortF_Init(void) {               // initialize sw2

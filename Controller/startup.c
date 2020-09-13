@@ -28,6 +28,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>    //Boolean for flag used in switch handler
+#include "led.h"
+#include "sorter_init.h"
 /* #include "inc/hw_nvic.h" */
 #define NVIC_CPAC               0xE000ED88  // Coprocessor Access Control
 #define NVIC_CPAC_CP11_M        0x00C00000  // CP11 Coprocessor Access
@@ -50,7 +52,7 @@ void ResetISR(void);
 static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
-static void StopHandler(void);
+static void StartStopHandler(void);
 
 //*****************************************************************************
 //
@@ -93,7 +95,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The PendSV handler
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
-    StopHandler,                            // GPIO Port B
+    StartStopHandler,                       // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
     IntDefaultHandler,                      // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
@@ -359,10 +361,16 @@ IntDefaultHandler(void)
 
 /* Interrupt handler for stop button */
 static void 
-StopHandler(void) 
+StartStopHandler(void) 
 {
-    while(1)
-    {
+    if (GPIO_PORTB_RIS & 0x80) {
+        GPIO_PORTB_ICR |= 0x80; // clear stop bit
+        while(!(GPIO_PORTB_RIS & 0x02)) {
+            blink(0x02); // blink red
+        }
+        GPIO_PORTB_ICR |= 0x02; // clear start bit
+    } else if (GPIO_PORTB_RIS & 0x02) {
+        GPIO_PORTB_ICR |= 0x02; // clear start bit
     }
 } 
 
