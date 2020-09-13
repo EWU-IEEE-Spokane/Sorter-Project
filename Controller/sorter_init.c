@@ -26,10 +26,10 @@ void PortA_Init(void) {
 
 void PortB_Init(void) {
     *SYSCTL_RCGCGPIO_R |= 0x02;       // activate clock on Port B
-    *GPIO_PORTB_DIR_R &= ~0x03;       // make PB1-0 pins input
+    *GPIO_PORTB_DIR_R &= ~0x43;       // make PB1-0, PB6 pins input
     *GPIO_PORTB_DIR_R |= 0x3C;        // make PB5-2 output
-    *GPIO_PORTB_DEN_R |= 0x3F;        // enable digital I/O on PB5-0
-    *GPIO_PORTB_PDR_R |= 0x03;        // enable pull-down resistor for PB1-0
+    *GPIO_PORTB_DEN_R |= 0x7F;        // enable digital I/O on PB6-0
+    *GPIO_PORTB_PDR_R |= 0x43;        // enable pull-down resistor for PB1-0, PB6
 }
 
 void PortF_Init(void) {               // initialize sw2

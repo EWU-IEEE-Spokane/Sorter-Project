@@ -12,6 +12,7 @@
 #define TABLE_OFFSET_FROM_HOME 0x00
 
 const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
+// range 240 steps
 
 /*
  *  PIN MAPPING:
@@ -21,6 +22,7 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  *      PB0: TABLE HOME LIMIT SW
  *      PB1: START SW
  *      PB5-2: CHUTE STEPPER DRIVER OUTPUT
+ *      PB6: CHUTE HOME LIMIT SW
  *      PF0: SW2 (TEST HOME SW)
  *      PF1: ON-BOARD RED LED
  *      PF2: ON-BOARD BLUE LED
@@ -90,6 +92,10 @@ void homeTable() {
     relPosMode(DIRECTION_CCW, TABLE_OFFSET_FROM_HOME, GPIO_PORTA_DATA_R);
 }
 
+void homeChute() {
+    homingMode(GPIO_PORTB_DATA_R, 6, GPIO_PORTB_DATA_R);
+}
+
 
 /*
  * Each rotation of the table involves the movement of 3 skittles.
@@ -141,7 +147,6 @@ int main() {
 
         // Run test sequence
         for (int i = 0; i < 200; i++) {
-            //chuteToColor(i);
             turnTable();
             ms_delay(1000);
         }
@@ -151,6 +156,7 @@ int main() {
         /* =========================== CONTROL LOOP ==================================== 
 
         homeTable();
+        homeChute();
 
         // A button triggered "stop" interrupt could pause execution after current operation is done
         // A button triggered "e-stop" could pause immediately and cut motor power
