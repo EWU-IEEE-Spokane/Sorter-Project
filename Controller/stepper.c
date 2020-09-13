@@ -79,7 +79,7 @@ uint8_t limitDebounce(uint32_t* inputSW_Reg, uint8_t inputSW_Pin) {
 
 // Homing Mode
 void homingMode(uint32_t* homeSW_Reg, uint8_t homeSW_Pin, uint32_t* output) { // data = 0000 00 & direction & limitSw
-    while((limitDebounce(homeSW_Reg, homeSW_Pin) == 0x00)) {                  // while the mode is unchanged and the switch is unpressed
+    while((limitDebounce(homeSW_Reg, homeSW_Pin) == 0x00)) {                  // while the switch is unpressed
         stepOnce(DIRECTION_CW, output);                                       // continuously step in the specified direction
         ms_delay(DELAY_COUNT);
     }
