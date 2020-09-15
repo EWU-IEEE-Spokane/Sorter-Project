@@ -372,6 +372,6 @@ StartStopHandler(void)
     } else if (GPIO_PORTB_RIS & 0x02) {
         GPIO_PORTB_ICR |= 0x02; // clear start bit
     }
-} 
+}
 
 
