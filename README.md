@@ -2,16 +2,16 @@
 This is where we host our documentation and code for the Industrial Sorter Project.
 
 # Minutes from 10/4
-- We came up with a schedule to prepare for the sorter project presentation on November 18th at 5-6pm. The schedule was posted by Cody, here and on Discord.
+We came up with a schedule to prepare for the sorter project presentation on November 18th at 5-6pm. The schedule was posted by Cody, here and on Discord.
 
-- We talked about a few ideas for the user interface:
-    -  Using a mini industrial control panel
-    -  Creating a PCB for it
-    -  Attaching LEDs to some type of board
+We talked about a few ideas for the user interface:
+- Using a mini industrial control panel
+- Creating a PCB for it
+- Attaching LEDs to some type of board
 
-- We discussed progress of the image processing:
-   -   Possible use of a raspberry pi
-   -   Issues with tm4c interfacing with camera
+We discussed progress of the image processing:
+- Possible use of a raspberry pi
+- Issues with tm4c interfacing with camera
 
 Upcoming Events:
 - a capture the flag event on Tuesday with Gonzaga, time TBD.
