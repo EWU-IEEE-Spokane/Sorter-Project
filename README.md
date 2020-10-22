@@ -1,6 +1,27 @@
 # Sorter-Project
 This is where we host our documentation and code for the Industrial Sorter Project.
 
+# Minutes 10/18
+
+Mechanical design
+    - Cody has had software issues with Fusion 360, so he is considering buying some aluminum extrusion to finish up
+
+User Interface
+    - For the user interface, we are aiming for some status lights
+        - Idle, run, pause, stop
+    - And 3 buttons
+        - Start, pause, and E-stop
+
+Parts Distribution
+    - Amy has the funds to send parts out if anyone needs any
+
+Pictures for the Easterner
+    - We spent a good amount of the meeting taking some in-meeting pictures for the Easterner to use in the story about our club
+
+Member list
+    - We came up with an exhaustive list of club members, and estimated class years for each member
+
+
 # Minutes from 10/4
 We came up with a schedule to prepare for the sorter project presentation on November 18th at 5-6pm. The schedule was posted by Cody, here and on Discord.
 
