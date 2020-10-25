@@ -1,6 +1,17 @@
 # Sorter-Project
 This is where we host our documentation and code for the Industrial Sorter Project.
 
+# Minutes 10/25/2020
+
+We started our meeting this week with a presentation from Matt on the image processing
+- He successfully coded a working algorithm in Matlab
+- Next steps are to get some pictures of skittles that will reflect the final output to test the algorithm, and coding the algorithm in C
+- We discussed how the camera interfaces with the Tm4C
+
+Cody is working on the final touches for the mechanical design
+- Depending on how complex importing 3D models from 360 to Blender will be, Jaidon will make an animation of the sorter
+
+
 # Minutes 10/18
 
 Mechanical design
