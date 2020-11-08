@@ -28,13 +28,13 @@ uint8_t cState_chute = 0;
  *      PB1: START SW
  *      PB5-2: CHUTE STEPPER DRIVER OUTPUT
  *      PB6: CHUTE HOME LIMIT SW
+ *      PB7: STOP SW
  *      PF0: SW2 (TEST HOME SW)
  *      PF1: ON-BOARD RED LED
  *      PF2: ON-BOARD BLUE LED
  *      PF3: ON-BOARD GREEN LED
  *      PF4: SW1 (TEST START)
  * 
- *      PB7: Stop interrupt
  */
 
 
