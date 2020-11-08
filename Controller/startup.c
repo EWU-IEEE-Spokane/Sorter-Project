@@ -363,14 +363,15 @@ IntDefaultHandler(void)
 static void 
 StartStopHandler(void) 
 {
-    if (GPIO_PORTB_RIS & 0x80) {
-        GPIO_PORTB_ICR |= 0x80; // clear stop bit
-        while(!(GPIO_PORTB_RIS & 0x02)) {
-            blink(0x02); // blink red
+    if (GPIO_PORTB_RIS & 0x80) { // If PB7 was pressed
+        GPIO_PORTB_ICR |= 0x80; // clear stop bit on PB7
+        while(!(GPIO_PORTB_RIS & 0x02)) { // While PB1 (start) has not been pressed
+            blink(0x02); // Blink red
         }
-        GPIO_PORTB_ICR |= 0x02; // clear start bit
-    } else if (GPIO_PORTB_RIS & 0x02) {
-        GPIO_PORTB_ICR |= 0x02; // clear start bit
+        GPIO_PORTB_ICR |= 0x02; // Clear start bit
+    } else if (GPIO_PORTB_RIS & 0x02) { // If PB1 has been pressed
+       /* GPIO_PORTB_ICR |= 0x02; // clear start bit*/
+       // Do nothing except leave the start bit set
     }
 }
 
