@@ -28,6 +28,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>    //Boolean for flag used in switch handler
+#include "led.h"
+#include "sorter_init.h"
 /* #include "inc/hw_nvic.h" */
 #define NVIC_CPAC               0xE000ED88  // Coprocessor Access Control
 #define NVIC_CPAC_CP11_M        0x00C00000  // CP11 Coprocessor Access
@@ -50,7 +52,7 @@ void ResetISR(void);
 static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
-static void switch_handler(void);       //added out interrupt's prototype here
+static void StartStopHandler(void);
 
 //*****************************************************************************
 //
@@ -93,7 +95,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The PendSV handler
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
-    IntDefaultHandler,                      // GPIO Port B
+    StartStopHandler,                       // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
     IntDefaultHandler,                      // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
@@ -122,7 +124,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Analog Comparator 2
     IntDefaultHandler,                      // System Control (PLL, OSC, BO)
     IntDefaultHandler,                      // FLASH Control
-    switch_handler,                         //IntDefaultHandler,  // GPIO Port F
+    IntDefaultHandler,                      // GPIO Port F
     IntDefaultHandler,                      // GPIO Port G
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
@@ -357,11 +359,20 @@ IntDefaultHandler(void)
     }
 }
 
-//extern bool flag;       //this is the key element that links main() and the interrupt. Extern looks for an external variable, and 'flag' is defined in the .c source code
-
-static void switch_handler(void) { //need to put this in startup.c in the right place to be called
-    unsigned long *gpioICR = (unsigned long *)  (0x40025000+0x41C);
-    //flag++;
-    *gpioICR = 0xFF;    //clear all interrups for port F
-    
+/* Interrupt handler for stop button */
+static void 
+StartStopHandler(void) 
+{
+    if (GPIO_PORTB_RIS & 0x80) { // If PB7 was pressed
+        GPIO_PORTB_ICR |= 0x80; // clear stop bit on PB7
+        while(!(GPIO_PORTB_RIS & 0x02)) { // While PB1 (start) has not been pressed
+            blink(0x02); // Blink red
+        }
+        GPIO_PORTB_ICR |= 0x02; // Clear start bit
+    } else if (GPIO_PORTB_RIS & 0x02) { // If PB1 has been pressed
+       /* GPIO_PORTB_ICR |= 0x02; // clear start bit*/
+       // Do nothing except leave the start bit set
+    }
 }
+
+

@@ -16,6 +16,11 @@ Start:     PB4
 #define MODE ((*GPIO_PORTB_DATA_R & 0x0C) >> 2)
 #define START ((*GPIO_PORTB_DATA_R & 0x10) >> 4)
 
+#define GPIO_PORTB_ICR (*(uint32_t*)(0x40005000 + 0x41C))
+#define GPIO_PORTB_RIS (*(uint32_t*)(0x40005000 + 0x414))
+#define NVIC_EN0_R (*(uint32_t*)(0xE000E000 + 0x100))
+#define NVIC_PRI0_R (*(uint32_t*)(0xE000E000 + 0x400))
+
 // I/O port addresses
 uint32_t *SYSCTL_RCGCGPIO_R;// Run-mode clock gating control
 uint32_t *GPIO_PORTA_DIR_R; // Port A direction

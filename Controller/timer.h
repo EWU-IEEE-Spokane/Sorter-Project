@@ -9,10 +9,12 @@
 #define NVIC_ST_CTRL_R          (*((volatile unsigned long *)0xE000E010))
 #define NVIC_ST_RELOAD_R        (*((volatile unsigned long *)0xE000E014))
 #define NVIC_ST_CURRENT_R       (*((volatile unsigned long *)0xE000E018))
+/*
 #define NVIC_EN0_R              (*((volatile unsigned long *)0xE000E100))
 #define NVIC_PRI4_R             (*((volatile unsigned long *)0xE000E410))
 #define NVIC_PRI7_R             (*((volatile unsigned long *)0xE000E41C))
 #define NVIC_SYS_PRI3_R         (*((volatile unsigned long *)0xE000ED20))
+*/
 
 void Disable_Interrupts(void);
 void Enable_Interrupts(void);

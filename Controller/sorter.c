@@ -12,6 +12,11 @@
 #define TABLE_OFFSET_FROM_HOME 0x00
 
 const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
+
+uint16_t cStep_table = 0;
+uint8_t cState_table = 0;
+uint16_t cStep_chute = 0;
+uint8_t cState_chute = 0;
 // range 240 steps
 
 /*
@@ -23,11 +28,13 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  *      PB1: START SW
  *      PB5-2: CHUTE STEPPER DRIVER OUTPUT
  *      PB6: CHUTE HOME LIMIT SW
+ *      PB7: STOP SW
  *      PF0: SW2 (TEST HOME SW)
  *      PF1: ON-BOARD RED LED
  *      PF2: ON-BOARD BLUE LED
  *      PF3: ON-BOARD GREEN LED
  *      PF4: SW1 (TEST START)
+ * 
  */
 
 
@@ -37,6 +44,7 @@ const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
  * function.
  */
 void configure() {
+    //Disable_Interrupts();
     setup_clock();
     Config_SysTick();
     
@@ -47,6 +55,7 @@ void configure() {
     configure_pwm();
 
     gpioInit();
+    //Enable_Interrupts();
 }
 
 
@@ -54,7 +63,7 @@ void configure() {
  * When a color is read from the sensor, this function handles moving the chute to the correct bin.
  */
 void chuteToColor(int color) {
-    absPosMode_Slice(colors[color], GPIO_PORTA_DATA_R);
+    absPosMode_Slice(colors[color], GPIO_PORTA_DATA_R, &cState_chute, &cStep_chute);
 }
 
 
@@ -74,7 +83,7 @@ void turnTable() {
         numberOfSteps++;
     }
 
-    relPosMode(DIRECTION_CW, numberOfSteps, GPIO_PORTA_DATA_R);
+    relPosMode(DIRECTION_CW, numberOfSteps, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
 }
 
 
@@ -86,14 +95,14 @@ void turnTable() {
  */
 void homeTable() {
     // Move to home switch
-    homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R);
+    homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
     ms_delay(10000);
     // Adjust for offset from home switch triggering
-    relPosMode(DIRECTION_CCW, TABLE_OFFSET_FROM_HOME, GPIO_PORTA_DATA_R);
+    relPosMode(DIRECTION_CCW, TABLE_OFFSET_FROM_HOME, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
 }
 
 void homeChute() {
-    homingMode(GPIO_PORTB_DATA_R, 6, GPIO_PORTB_DATA_R);
+    homingMode(GPIO_PORTB_DATA_R, 6, GPIO_PORTB_DATA_R, &cState_chute, &cStep_chute);
 }
 
 
@@ -120,6 +129,8 @@ void singleSort() {
 }
 
 
+
+
 int main() {
     configure();
 
@@ -138,7 +149,7 @@ int main() {
          ====================== TEST CODE WITHOUT SENSOR ============================= */
         //ms_delay(10000);
         // Move to home position
-         homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R); // Use PB0 for home switch
+         homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table); // Use PB0 for home switch
         // homingMode(GPIO_PORTF_DATA_R, 0, GPIO_PORTA_DATA_R); // Use SW2 for home switch
         //homeTable();
 
