@@ -1,6 +1,29 @@
 # Sorter-Project
 This is where we host our documentation and code for the Industrial Sorter Project.
 
+# Minutes 11/8/2020
+
+We started the meeting with discussing a presentable document for the image processing algorithm
+- Mathew will be working on this
+
+We had a demo by Cody of the Sorter (sort of) sorting
+- There are still some bugs to work out, the machine is moving between extremes
+
+We discussed getting the presentation prepared
+- Things to show while talking
+- Videos and Documents to discuss
+- Start with a video
+- Each team creates a slide
+- Future developments
+- Team organization
+- Mechanical design
+- PCB design
+- Controls software
+
+We set up the sorter project presentation event invitation through IEEE vTools
+- Register here! https://events.vtools.ieee.org/m/247537 
+
+
 # Minutes 10/25/2020
 
 We started our meeting this week with a presentation from Matt on the image processing
