@@ -96,11 +96,13 @@ void turnTable() {
 void homeTable() {
     // Move to home switch
     homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
-    ms_delay(10000);
     // Adjust for offset from home switch triggering
     relPosMode(DIRECTION_CCW, TABLE_OFFSET_FROM_HOME, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
 }
 
+/*
+ * Returns the chute to its homed position
+ */
 void homeChute() {
     homingMode(GPIO_PORTB_DATA_R, 6, GPIO_PORTB_DATA_R, &cState_chute, &cStep_chute);
 }
@@ -128,9 +130,6 @@ void singleSort() {
     //hopperCycle();
 }
 
-
-
-
 int main() {
     configure();
 
@@ -147,14 +146,9 @@ int main() {
         chuteToColor(read_colors());
 
          ====================== TEST CODE WITHOUT SENSOR ============================= */
-        //ms_delay(10000);
         // Move to home position
-         homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table); // Use PB0 for home switch
+        homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table); // Use PB0 for home switch
         // homingMode(GPIO_PORTF_DATA_R, 0, GPIO_PORTA_DATA_R); // Use SW2 for home switch
-        //homeTable();
-
-        // Wait at home for short period
-        ms_delay(10000);
 
         // Run test sequence
         for (int i = 0; i < 200; i++) {
@@ -169,8 +163,6 @@ int main() {
         homeTable();
         homeChute();
 
-        // A button triggered "stop" interrupt could pause execution after current operation is done
-        // A button triggered "e-stop" could pause immediately and cut motor power
         while (1)
         {
             singleSort();
