@@ -5,7 +5,7 @@ uint32_t* SYSCTL_RCGCGPIO_R = (uint32_t*) (0x400FE000 + 0x608); // Run-mode cloc
 
 uint32_t* GPIO_PORTA_DIR_R  = (uint32_t*) (0x40004000 + 0x400); // Port A direction
 uint32_t* GPIO_PORTA_DEN_R  = (uint32_t*) (0x40004000 + 0x51C); // Port A Digital Enable
-uint32_t* GPIO_PORTA_DATA_R = (uint32_t*) (0x40004000 + 0x1F0); // Port A Data for Pins 6-2
+uint32_t* GPIO_PORTA_DATA_R = (uint32_t*) (0x40004000 + 0x0F0); // Port A Data for Pins 5-2 
 
 uint32_t* GPIO_PORTB_DIR_R  = (uint32_t*) (0x40005000 + 0x400); // Port B direction
 uint32_t* GPIO_PORTB_DEN_R  = (uint32_t*) (0x40005000 + 0x51C); // Port B Digital Enable
@@ -17,6 +17,12 @@ uint32_t* GPIO_PORTB_IBE    = (uint32_t*) (0x40005000 + 0x408); // Interrupt bot
 uint32_t* GPIO_PORTB_IEV    = (uint32_t*) (0x40005000 + 0x40C); // Interrupt event
 //uint32_t* GPIO_PORTB_RIS    = (uint32_t*) (0x40005000 + 0x414); // Raw interrupt status
 //uint32_t* GPIO_PORTB_ICR    = (uint32_t*) (0x40005000 + 0x41C); // Interrupt clear
+
+uint32_t* GPIO_PORTD_DATA_R = (uint32_t*) (0x40007000 + 0x33C); // Port D 
+uint32_t* GPIO_PORTD_DIR_R  = (uint32_t*) (0x40007000 + 0x400); // Port D direction
+uint32_t* GPIO_PORTD_DEN_R  = (uint32_t*) (0x40007000 + 0x51C); // Port D Digital Enable
+uint32_t* GPIO_PORTD_LOCK_R = (uint32_t*) (0x40007000 + 0x520); // Port F Lock register
+uint32_t* GPIO_PORTD_CR     = (uint32_t*) (0x40025000 + 0x524); // Port F Commit register
 
 uint32_t* GPIO_PORTF_DIR_R  = (uint32_t*) (0x40025000 + 0x400); // Port F direction
 uint32_t* GPIO_PORTF_LOCK_R = (uint32_t*) (0x40025000 + 0x520); // Port F Lock register
@@ -58,8 +64,17 @@ void PortF_Init(void) {               // initialize sw2
     *GPIO_PORTF_PUR_R |= 0x11;        // enable PUR on sw2 & sw1
 }
 
+void PortD_Init(void) {
+    *SYSCTL_RCGCGPIO_R |= 0x08; 
+    *GPIO_PORTD_LOCK_R = 0x4C4F434B;  // unlock commit register
+    *GPIO_PORTD_DIR_R |= 0xCF;        // Set pins 0-3 & 6-7 as output
+    *GPIO_PORTD_CR    |= 0x80;        // enable committing to pin 0 for DEN, PUR
+    *GPIO_PORTB_DEN_R |= 0xCF;        // enable digital I/O on PB7-0
+}
+
 void gpioInit(void) {
     PortA_Init();
     PortB_Init();
     PortF_Init();
+    PortD_Init();
 }

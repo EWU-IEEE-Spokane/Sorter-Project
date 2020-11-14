@@ -374,5 +374,3 @@ StartStopHandler(void)
        // Do nothing except leave the start bit set
     }
 }
-
-

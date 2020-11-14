@@ -37,9 +37,14 @@ uint32_t *GPIO_PORTF_DEN_R; // Port F Digital Enable
 uint32_t *GPIO_PORTF_DATA_R;// Port F Data for Pin PF0 (sw2)
 uint32_t *GPIO_PORTF_PUR_R; // Port F Pull-up Resistors
 
+uint32_t* GPIO_PORTD_DIR_R;
+uint32_t* GPIO_PORTD_DEN_R;
+uint32_t* GPIO_PORTD_DATA_R;
+
 void gpioInit(void);
 void PortA_Init(void);
 void PortB_Init(void);
 void PortF_Init(void);
+void PortD_Init(void);
 
 #endif

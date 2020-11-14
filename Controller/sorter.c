@@ -10,6 +10,10 @@
 #include "timer.h"
 
 #define TABLE_OFFSET_FROM_HOME 0x00
+#define HOME_STATE 0
+#define RUN_STATE 1
+#define PAUSE_STATE 2
+#define STOP_STATE 3
 
 const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
 
@@ -34,8 +38,30 @@ uint8_t cState_chute = 0;
  *      PF2: ON-BOARD BLUE LED
  *      PF3: ON-BOARD GREEN LED
  *      PF4: SW1 (TEST START)
- * 
+ *      PD0: Home LED
+ *      PD1: Run LED (G)
+ *      PD2: Pause LED (Y)
+ *      PD3: Stop LED (R)
+ *      PD6-7: Agitator Motor
  */
+
+/*
+ * Used to move auger
+ */
+void hopperCycle(uint32_t direction) {
+    if(direction == DIRECTION_CW) {
+        *GPIO_PORTD_DATA_R |= 0x80;
+        *GPIO_PORTD_DATA_R &= ~0x40;
+    } else if (direction == DIRECTION_CCW) {
+        *GPIO_PORTD_DATA_R |= 0x40;
+        *GPIO_PORTD_DATA_R &= ~0x80;
+    } else {
+        *GPIO_PORTD_DATA_R &= ~0xC0;
+    }
+
+    ms_delay(2000);
+    *GPIO_PORTD_DATA_R &= ~0xC0;
+}
 
 
 /*
@@ -127,10 +153,18 @@ void singleSort() {
     // move chute to skittle B color's bin
     chuteToColor(read_colors());
 
-    //hopperCycle();
+    hopperCycle(DIRECTION_CW);
+}
+
+void updateStatus(uint8_t status) {
+
 }
 
 int main() {
+    // 0 - idle, 1 - run, 2 - pause, 3 - stop, 4 - homing
+    uint8_t status = 0;
+
+    // Run configuration for peripherals
     configure();
 
     // 3 Green blinks to show successful configure() execution
@@ -147,14 +181,16 @@ int main() {
 
          ====================== TEST CODE WITHOUT SENSOR ============================= */
         // Move to home position
-        homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table); // Use PB0 for home switch
+        // homingMode(GPIO_PORTB_DATA_R, 0, GPIO_PORTA_DATA_R, &cState_table, &cStep_table);
         // homingMode(GPIO_PORTF_DATA_R, 0, GPIO_PORTA_DATA_R); // Use SW2 for home switch
 
         // Run test sequence
+        /*
         for (int i = 0; i < 200; i++) {
             turnTable();
             ms_delay(1000);
         }
+        */
          /*========================== END TEST CODE ==================================== */
 
 
