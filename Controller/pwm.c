@@ -13,8 +13,8 @@ void configure_pwm(){
 	//gpio stuff, for getting port ready for pwm
     unsigned long * gpioAFSEL 	= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x420);  //Alternative function select for choosing function other than GPIO on Port F, page 671
     unsigned long * gpioPCTL 	= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x52C);  //Port Control register for choosing PWM as the alternate function to use, pages 688, 1352
-    unsigned long *gpioden 		= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x51c );	//Digital enable registry address for enabling or disabling digital enable. Page 682 in the datasheet
-    unsigned long *gpioAMSEL 	= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x528 ); //analog function enable register
+    unsigned long * gpioden 	= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x51c );	//Digital enable registry address for enabling or disabling digital enable. Page 682 in the datasheet
+    unsigned long * gpioAMSEL 	= (unsigned long *)(PORT_F_BASE_ADDRESS + 0x528 ); //analog function enable register
 
     //PWM specific stuff
     unsigned long * pwm2genb 	= (unsigned long *)(0x40029000 + 0x0E4); 	//use gen b register desc p1285
@@ -34,8 +34,8 @@ void configure_pwm(){
 	
 	*gpioAMSEL &= ~(1<<1);		//disable analog functions on pin 1
 	
-    *gpioAFSEL |= (1<<1);	//make Port F pin 1 an alternate function
-    *gpioPCTL |= (0x5<<4); 	//set PF1 to get alt func M1PWM5 pages 689, 1352
+    *gpioAFSEL |= (7<<1);	//make Port F pin 3-1 an alternate function
+    *gpioPCTL |= (0x5550); 	//set PF1 to get alt func M1PWM5 pages 689, 1352
      
     *rcc |= (1<<20);	//usepwmdiv page 254
 	*rcc &= ~(0x7<<17);	//clear PWMdiv value as per initialization instructions
@@ -50,7 +50,7 @@ void configure_pwm(){
 
 	//Change these values to change PWM Duty Cycle. Load determines max count value, cmpB is counter value at which the ouput goes high
     *pwm2load = 0x999;	//arbitrary value for testing
-    *pwm2cmpB = 0x998;	//arbitrary value for testing, comp B must be less than load
+    *pwm2cmpB = 0x700;	//arbitrary value for testing, comp B must be less than load
 	
 	/*doesnt work if this block is included, despite datasheet recommending it. Need additional controls?
 	*SRPWM |= (1<<1);	//clear pwm1 counter so it can be started over by command

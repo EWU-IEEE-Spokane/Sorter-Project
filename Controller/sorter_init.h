@@ -41,6 +41,13 @@ uint32_t* GPIO_PORTD_DIR_R;
 uint32_t* GPIO_PORTD_DEN_R;
 uint32_t* GPIO_PORTD_DATA_R;
 
+uint32_t* PWM_M1PWM2CTL_R; // PWM Module 1 Control R for PWM on PF1
+uint32_t* PWM_M1PWM3CTL_R; // PWM Module 1 Control R for PWM on PF2-3
+uint32_t* PWM_PWMENABLE_R; // PWM Enable
+uint32_t* PWM_PWM3COMPA_R; // PWM Gen 3 Comparator Value
+uint32_t* PWM_PWM2COMPA_R; // PWM Gen 2 Comparator Value
+uint32_t* PWM_PWM3COMPB_R; // PWM Gen 3 Comp B Value
+
 void gpioInit(void);
 void PortA_Init(void);
 void PortB_Init(void);

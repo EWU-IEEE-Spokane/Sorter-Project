@@ -14,8 +14,41 @@
 #define RUN_STATE 1
 #define PAUSE_STATE 2
 #define STOP_STATE 3
+#define PWM_DUTY_CYCLE 10
+#define PWM_LOAD 499
+
+// Holds the data in a color
+struct Color {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+};
+
+typedef const struct Color rgbColor_t;
 
 const uint8_t colors[6] = {REJECT, RED, ORANGE, YELLOW, GREEN, PURPLE};
+rgbColor_t rgbColors[6] = {{255,255,255}, {255,0,0}, {255,128,0}, {255,255,0}, {0,255,0}, {102,0,204}};
+
+// Modifies the comparator values for PWM outputs to dim lights accordingly
+void updateRGB(rgbColor_t color) {
+    uint32_t compRange = PWM_LOAD * PWM_DUTY_CYCLE / 100;
+    uint8_t Rcomp = PWM_LOAD - (compRange * color.red / 255) - 1;
+    uint8_t Gcomp = PWM_LOAD - (compRange * color.green / 255) - 1;
+    uint8_t Bcomp = PWM_LOAD - (compRange * color.blue / 255) - 1;
+
+    *PWM_PWMENABLE_R  &= ~0xE0;        // Disable PWM signals on Module 1, PWM 5-7
+    *PWM_M1PWM2CTL_R  &= ~0x01;        // Disable PWM generators for M1, Block 2 (we only use Generator B)
+    *PWM_M1PWM3CTL_R  &= ~0x01;        // Disable PWM generators for M1, Block 3 (A and B)
+
+    *PWM_PWM2COMPA_R  = Rcomp;
+    *PWM_PWM3COMPA_R  = Bcomp;
+    *PWM_PWM3COMPB_R  = Gcomp;
+
+    *PWM_M1PWM2CTL_R  |= 0x01;        // Enable PWM generators for M1, Block 2 (we only use Generator B)
+    *PWM_M1PWM3CTL_R  |= 0x01;        // Enable PWM generators for M1, Block 3 (A and B)
+    *PWM_PWMENABLE_R  |= 0xE0;        // Enable PWM signals on Module 1, PWM 5-7
+}
+
 
 uint16_t cStep_table = 0;
 uint8_t cState_table = 0;
@@ -44,6 +77,8 @@ uint8_t cState_chute = 0;
  *      PD3: Stop LED (R)
  *      PD6-7: Agitator Motor
  */
+
+
 
 /*
  * Used to move auger
@@ -74,11 +109,11 @@ void configure() {
     setup_clock();
     Config_SysTick();
     
-    setup_I2C();
-    setup_LEDs();
-    setup_uart();
-    //  config_sensor();
-    configure_pwm();
+//    setup_I2C();
+//    setup_LEDs();
+//    setup_uart();
+    //config_sensor();
+//    configure_pwm();
 
     gpioInit();
     //Enable_Interrupts();
@@ -146,12 +181,17 @@ void homeChute() {
  * After each rotation, the hopper auger rotates to stage the next "Skittle A" for loading
  */
 void singleSort() {
+    int color;
+
     // rotate table
     turnTable();
 
     // read color of skittle B
+    color = read_colors();
+    updateRGB(rgbColors[color]);
+
     // move chute to skittle B color's bin
-    chuteToColor(read_colors());
+    chuteToColor(color);
 
     hopperCycle(DIRECTION_CW);
 }
@@ -171,6 +211,11 @@ int main() {
     blink(0x08);
     blink(0x08);
     blink(0x08);
+
+    for (int i = 0; i < 6; i++) {
+        updateRGB(rgbColors[i]);
+        ms_delay(1000);
+    }
     
     while (1) {
         while ((*GPIO_PORTF_DATA_R & 0x10) >> 4) { ; } /* Wait for SW1 to be pressed */
