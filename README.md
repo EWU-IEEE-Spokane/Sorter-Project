@@ -1,6 +1,33 @@
 # Sorter-Project
 This is where we host our documentation and code for the Industrial Sorter Project.
 
+# Minutes 11/22/20
+
+- We discussed the 3D printed figures from the TinkerCAD fiesta on Friday
+    - The printing is going well, other than some more difficult organic shapes
+
+- We discussed methods of holding hand sanitizer
+    - Using some kind of sealant on the inside of a 3D printed enclosure
+    - Designing parts to screw onto a standard bottle size
+    - Using a bag on the inside of the enclosure
+    - Partnering with the chemistry department for the solution
+    - Solving the problem of viscosity to keep the dispensing speed reasonable
+    - Nhat has a working prototype
+    - Working on the software side of things
+
+- We revisited the sorter machine design document
+    - We accomplished a lot of what we set out to do
+    - Some things we descoped, or determined weren't necessary
+
+- We discussed Git and GitHub
+    - Over winter break, we may do a workshop
+    - Mathew has uploaded his code to GitHub
+
+- We talked about cameras for the image processing
+    - Here is a link to the camera we're considering:
+        https://www.amazon.com/HiLetgo-OV7670-640x480-0-3Mega-Arduino/dp/B07S66Y3ZQ/ref=pd_sbs_328_3/139-5662391-1864915?_encoding=UTF8&pd_rd_i=B07S66Y3ZQ&pd_rd_r=02b49503-0e48-430b-b970-463fb46d19bc&pd_rd_w=8EE1m&pd_rd_wg=HRGGW&pf_rd_p=ed1e2146-ecfe-435e-b3b5-d79fa072fd58&pf_rd_r=08M03GN35VDEACAYYGNG&psc=1&refRID=08M03GN35VDEACAYYGNG
+
+
 # Minutes 11/8/2020
 
 We started the meeting with discussing a presentable document for the image processing algorithm
