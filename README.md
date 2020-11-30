@@ -1,6 +1,17 @@
 # Sorter-Project
 This is where we host our documentation and code for the Industrial Sorter Project.
 
+# Minutes 11/29/20
+
+We started our meeting looking at the data sheet for the cameras we will be using
+    - voti.nl/docs/OV7670.pdf
+We also discussed ways to reduce glare in the sorter cups
+    - Using a cloth like felt to absorb light
+    - Doing the filtering entirely with the image processing algorithm
+We talked about ways of getting camera data from the microcontroller to a visible photo
+    - Exporting data through UART into a text file, and parsing with some programming language
+
+
 # Minutes 11/22/20
 
 - We discussed the 3D printed figures from the TinkerCAD fiesta on Friday
